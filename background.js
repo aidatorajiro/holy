@@ -1,6 +1,6 @@
 class Background {
     constructor () {
-        let coeff = 30; // param
+        let coeff = 200; // param
         let alpha = 2.2;
         let beta_1 = 5723.9;
         let beta_2 = 25925.9;
