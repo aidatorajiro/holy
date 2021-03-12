@@ -6,7 +6,9 @@ class Background {
             let geometry = new THREE.PlaneGeometry(tex.image.width*coeff, tex.image.height*coeff, 1, 1);
             let material = new THREE.RawShaderMaterial({
                 uniforms: {
-                  texture: { value: tex }
+                  texture: { value: tex },
+                  far: { value: 300.0 },
+                  dotvec: { value: new THREE.Vector2(171717.0, 777777.0) }
                 },
                 vertexShader: `
 precision mediump float;
@@ -27,9 +29,17 @@ void main() {
 precision mediump float;
 
 uniform sampler2D texture;
+uniform float far;
+uniform vec2 dotvec;
 varying vec2 vUv;
 void main() {
-    vec3 color = texture2D(texture, vUv).rgb;
+    //float r = fract(sin(dot(vUv.xy ,vec2(17.0,7.0))) * 10000.0);
+    //float r = sin(dot(vUv.xy, vec2(171717.0,777777.0)));
+    //float r = sin(dot(vUv.xy, vec2(sin(vUv.x * 10000.0) * 10000.0,sin(vUv.y * 10000.0) * 10000.0)));
+    //float r = fract(sin(dot(vUv.xy, vec2(171717.0,777777.0))));
+    float r = sin(dot(vUv.xy, dotvec));
+    vec2 v = vec2(vUv.x + r/far, vUv.y + r/far);
+    vec3 color = texture2D(texture, v).rgb;
     gl_FragColor = vec4(color, 1);
 }
 `,
