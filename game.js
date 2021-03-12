@@ -7,19 +7,20 @@ class Game {
         Globals.height = window.innerHeight;
 
         // camera / scene / renderer preparation
-        Globals.camera = new THREE.PerspectiveCamera( 75, Globals.width / Globals.height, 0.1, 1000 );
+        Globals.camera = new THREE.OrthographicCamera( -Globals.width / 2, Globals.width / 2, Globals.height / 2, -Globals.height / 2, 1, 2000 );
+        Globals.camera.position.z = 500;
 
         Globals.scene = new THREE.Scene()
 
-        Globals.renderer = new THREE.WebGLRenderer()
+        Globals.renderer = new THREE.WebGLRenderer({ antialias: true })
         Globals.renderer.setSize(Globals.width, Globals.height)
-        Globals.renderer.setClearColorHex( 0xffffff, 1 );
+        Globals.renderer.setClearColor( 0, 1 );
         document.body.appendChild(Globals.renderer.domElement)
 
         // construct objects
         Globals.eventManagement = new EventManagement()
-        //Globals.xxx = new XXX()
-        //Globals.xxx = new XXX()
+        Globals.background = new Background()
+        Globals.textshow = new Textshow()
         //Globals.xxx = new XXX()
 
         // first frame: call animate func
@@ -51,11 +52,10 @@ class Game {
         Globals.width = window.innerWidth;
         Globals.height = window.innerHeight;
         Globals.renderer.setSize(Globals.width, Globals.height)
-        Globals.camera.aspect = Globals.width / Globals.height
-        //Globals.camera.left = Globals.width / -2
-        //Globals.camera.right = Globals.width / 2
-        //Globals.camera.top = Globals.height / 2
-        //Globals.camera.bottom = Globals.height / -2
+        Globals.camera.left = Globals.width / -2
+        Globals.camera.right = Globals.width / 2
+        Globals.camera.top = Globals.height / 2
+        Globals.camera.bottom = Globals.height / -2
         Globals.camera.updateProjectionMatrix()
     }
 
