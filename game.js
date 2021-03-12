@@ -21,7 +21,7 @@ class Game {
         Globals.eventManagement = new EventManagement()
         Globals.background = new Background()
         Globals.textshow = new Textshow()
-        //Globals.xxx = new XXX()
+        Globals.raw = new Raw()
 
         // first frame: call animate func
         requestAnimationFrame((time) => {
@@ -79,4 +79,6 @@ class Game {
 
 }
 
-Globals.game = new Game()
+window.addEventListener("load", function () {
+    Globals.game = new Game()
+});

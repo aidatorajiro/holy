@@ -5,13 +5,19 @@
     <title>Hello World!</title>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';" />
     <style>
+        @font-face {
+            font-family: NotoSans;
+            src: url(noto/NotoSansJP-Thin.otf);
+        }
         body {
             margin: 0;
         }
     </style>
 </head>
 <body>
+    <div style="font-family: NotoSans; color: #00000001; position: absolute;">《ここに何か面白い文章を書く》</div>
     <script src="three.js"></script>
+    <script src="raw.js"></script>
     <script src="eventmanagement.js"></script>
     <script src="background.js"></script>
     <script src="textshow.js"></script>

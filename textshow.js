@@ -1,11 +1,12 @@
 class Textshow {
     constructor () {
+        const fontSize = 32; // param
+        const offset = 15; // param
+        
         let canvas = document.createElement('canvas');
         let ctx = canvas.getContext('2d');
         const text = "ああああいいいい";
-        const fontSize = 32;
-        const offset = 15;
-        const font = "bold " + fontSize + "px 'courier New'";
+        const font = fontSize + "px NotoSans";
         ctx.font = font;
         const measureWidth = ctx.measureText(text);
         const width = measureWidth.width + offset*2;
@@ -22,6 +23,7 @@ class Textshow {
         texture.minFilter = THREE.LinearFilter;
         texture.magFilter = THREE.LinearFilter;
         texture.format = THREE.RGBAFormat;
+        console.log(texture);
         // TODO: dealloc canvas
         let geometry = new THREE.PlaneGeometry(width, height, 1, 1);
         let material = new THREE.RawShaderMaterial({
@@ -61,8 +63,6 @@ void main() {
 
         let mesh = new THREE.Mesh(geometry, material);
         Globals.scene.add(mesh);
-
-        console.log(mesh)
 
         mesh.position.z = 1
     }
