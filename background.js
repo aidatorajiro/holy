@@ -10,7 +10,7 @@ class Background {
             let material = new THREE.RawShaderMaterial({
                 uniforms: {
                   texture: { value: tex },
-                  far: { value: new THREE.Vector2(tex.image.width*2.2, tex.image.height*2.2) },
+                  far: { value: new THREE.Vector2(tex.image.width*alpha, tex.image.height*alpha) },
                   dotvec: { value: new THREE.Vector2(beta_1*coeff, beta_2*coeff) }
                 },
                 vertexShader: `
