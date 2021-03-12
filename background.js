@@ -7,7 +7,7 @@ class Background {
             let material = new THREE.RawShaderMaterial({
                 uniforms: {
                   texture: { value: tex },
-                  far: { value: 300.0 },
+                  far: { value: new THREE.Vector2(tex.image.width*2.2, tex.image.height*2.2) },
                   dotvec: { value: new THREE.Vector2(171717.0, 777777.0) }
                 },
                 vertexShader: `
@@ -29,7 +29,7 @@ void main() {
 precision mediump float;
 
 uniform sampler2D texture;
-uniform float far;
+uniform vec2 far;
 uniform vec2 dotvec;
 varying vec2 vUv;
 void main() {
@@ -38,7 +38,7 @@ void main() {
     //float r = sin(dot(vUv.xy, vec2(sin(vUv.x * 10000.0) * 10000.0,sin(vUv.y * 10000.0) * 10000.0)));
     //float r = fract(sin(dot(vUv.xy, vec2(171717.0,777777.0))));
     float r = sin(dot(vUv.xy, dotvec));
-    vec2 v = vec2(vUv.x + r/far, vUv.y + r/far);
+    vec2 v = vec2(vUv.x + r/far.x, vUv.y + r/far.y);
     vec3 color = texture2D(texture, v).rgb;
     gl_FragColor = vec4(color, 1);
 }
