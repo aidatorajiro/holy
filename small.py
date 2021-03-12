@@ -1,8 +1,6 @@
 import json
 import random
 
-json.load
-
 with open('out.json', 'r') as f:
     obj = json.load(f)
 
