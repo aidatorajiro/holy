@@ -2,10 +2,11 @@ class Textshow {
     constructor () {
         const fontSize = 32; // param
         const offset = 15; // param
-        
+
         let canvas = document.createElement('canvas');
         let ctx = canvas.getContext('2d');
-        const text = "ああああいいいい";
+        // 44 characters (wrap length)
+        const text = "ああああいいいいああああいいいいああああいいいいああああいいいいああああいいいいいいいい";
         const font = fontSize + "px NotoSans";
         ctx.font = font;
         const measureWidth = ctx.measureText(text);
