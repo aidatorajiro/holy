@@ -1,6 +1,9 @@
 class Background {
     constructor () {
         let coeff = 30; // param
+        let alpha = 2.2;
+        let beta_1 = 5723.9;
+        let beta_2 = 25925.9;
         
         var map = new THREE.TextureLoader().load( "assets/4.png", (tex) => {
             let geometry = new THREE.PlaneGeometry(tex.image.width*coeff, tex.image.height*coeff, 1, 1);
@@ -8,7 +11,7 @@ class Background {
                 uniforms: {
                   texture: { value: tex },
                   far: { value: new THREE.Vector2(tex.image.width*2.2, tex.image.height*2.2) },
-                  dotvec: { value: new THREE.Vector2(171717.0, 777777.0) }
+                  dotvec: { value: new THREE.Vector2(beta_1*coeff, beta_2*coeff) }
                 },
                 vertexShader: `
 precision mediump float;
