@@ -1,5 +1,9 @@
 const { app, BrowserWindow } = require('electron')
 
+if (process.env.NODE_ENV == 'development') {
+  require('electron-reloader')(module)
+}
+
 function createWindow () {
   const win = new BrowserWindow({
     width: 800,
