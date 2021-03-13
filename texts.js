@@ -4,20 +4,56 @@ class Texts {
             this.write(Globals.raw.json[0])
         });
     }
-    write (text, fontSize=32, offset=15, limit=1408, ) {
-        console.log(text)
-
-        let texts = text.split("\n")[0]
+    write (text, fontSize=32, lineHeight=32, offset=15, len=44) {
+        let lines = text.split("\n")
 
         let canvas = document.createElement('canvas');
         let ctx = canvas.getContext('2d');
+
         // 44 characters (wrap length), 1408 pixels
         const font = fontSize + "px NotoSans";
-        ctx.font = font;
-        const measureWidth = ctx.measureText(text);
-        console.log(measureWidth)
-        const width = limit + offset*2;
-        const height = fontSize + offset*2;
+        const maxWidth = measure("あ".repeat(len));
+
+        function measure (x) {
+            ctx.font = font;
+            return ctx.measureText(x).width;
+        }
+
+        function change (x, y, n) {
+            if (n > 0) {
+                return [x.slice(0, -n), x.slice(-n) + y]
+            } else if (n < 0) {
+                n = -n;
+                return [x + y.slice(0, n), y.slice(n)]
+            } else {
+                return [x, y]
+            }
+        }
+        
+        let segments = []
+
+        for (let line of lines) {
+            while (true) {
+                let segment = line.slice(0, len)
+                let segmentWidth = measure(segment)
+                line = line.slice(len)
+                
+                if (line.length !== 0) {
+                    let amari = maxWidth - segmentWidth;
+                    if (Math.abs(amari) >= fontSize) {
+                        console.log("amari ga detayo")
+                        console.log(amari)
+                    }
+                    segments.push(segment)
+                } else {
+                    segments.push(segment)
+                    break
+                }
+            }
+        }
+        
+        const width = maxWidth + offset*2;
+        const height = segments.length*lineHeight + offset*2;
         canvas.width = width;
         canvas.height = height;
         ctx.font = font;
