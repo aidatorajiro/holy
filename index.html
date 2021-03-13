@@ -17,7 +17,9 @@
 <body>
     <div style="font-family: NotoSans; color: #00000001; position: absolute;">《ここに何か面白い文章を書く》</div>
     <script>
-        if (window.require) {
+        if (window.THREE !== undefined) {
+            console.log("using preloaded THREE")
+        } else if (window.require !== undefined) {
             window.THREE = require('three')
         } else {
             let s = document.createElement("script");
