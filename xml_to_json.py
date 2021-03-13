@@ -10,13 +10,16 @@ def n(x):
     return x or ''
 
 def remove_last_spaces(x):
-    return re.sub('[\n ]*$', '', x)
+    return re.sub('[\n \t]*$', '', x)
 
 def is_only_spaces(x):
-    return re.match("^[\n ]*$", x)
+    return re.match("^[\n \t]*$", x)
+
+def tst(e):
+    return ET.tostring(e, encoding='unicode')
 
 def innerXML(tag):
-    return (tag.text or '') + ''.join(ET.tostring(e, encoding='unicode') for e in tag)
+    return (tag.text or '') + ''.join(tst(e) for e in tag)
 
 for i, fn in enumerate(xmls):
     print("%s / %s" % (i + 1, len(xmls)))
@@ -30,12 +33,15 @@ for i, fn in enumerate(xmls):
         text = n(elem.text)
         tail = n(elem.tail)
 
-        if elem.tag in ['Rt', 'Ruby']:
+        if elem.tag in ['Rt', 'Ruby', 'QuoteStruct', 'Sup', 'ArithFormula', 'Sub']: # elem is either Rt or Ruby
             continue
-        elif elem.find('Ruby'):
-            append = re.sub('Rt>\n', 'Rt>', innerXML(elem))
-        else:
-            append = remove_last_spaces(text) + remove_last_spaces(tail)
+
+        if all(map(lambda x: x.tag in ['Ruby', 'QuoteStruct', 'Sup', 'ArithFormula', 'Sub'], elem)): # has only these direct child, or no child
+            append = innerXML(elem).replace("\n", "").replace("<Ruby>", "$").replace("</Ruby>", "$").replace("<Rt>", "%").replace("</Rt>", "%").replace("<Rt />", "").replace("<Rt/>", "")
+
+            if ("Ruby" in append):
+                print(tst(elem))
+                raise Exception("unhandled Ruby detected")
             
             if elem.tag == "ItemTitle":
                 append = "#i#" + append
@@ -49,9 +55,16 @@ for i, fn in enumerate(xmls):
             m = re.match('Subitem(\d+)Title', elem.tag)
             if m:
                 append = ("#s%s#" % m[1]) + append
-        
-        if (not is_only_spaces(append)):
-            result += append + "\n"
+
+            if not is_only_spaces(append):
+                result += append + "\n"
+            else:
+                print("Unhandled empty tag")
+                print(tst(elem))
+        else:
+            if not is_only_spaces(text + tail):
+                print(tst(elem))
+                raise Exception("unhandled element with text exist")
     
     jsonobj.append(result)
     if output_txt:
