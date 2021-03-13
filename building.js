@@ -111,6 +111,7 @@ void main() {
     async makeLinkPlots () {
         let child_process = require('child_process')
         let child = child_process.spawn("/usr/local/bin/mecab")
+        try {
         function analyze (x) {
             child.stdin.write(x + "\n")
             return new Promise(function (res, rej) {
@@ -162,7 +163,8 @@ void main() {
             .sort((x, y) => (y[1][1].length - x[1][1].length))
 
         this.linkPlots = linkPlots
-
+        } finally {
         child.stdin.end()
+        }
     }
 }
