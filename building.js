@@ -110,8 +110,11 @@ void main() {
 
     async makeLinkPlots () {
         let child_process = require('child_process')
-        let child = child_process.spawn("/usr/local/bin/mecab")
+        let child = child_process.spawn("mecab")
         try {
+        
+        // analyze text via mecab 0.996
+        
         function analyze (x) {
             child.stdin.write(x + "\n")
             return new Promise(function (res, rej) {
@@ -120,6 +123,17 @@ void main() {
                 })
             })
         }
+
+        // parse mecab output to generate trayToPos
+        // trayToPos is a hashmap that maps trays to the positions of them in the text.
+        // trays are combinations of words, calculated from the mecab output. 
+        // consecutive words with the same type (e.g. verb, noun, adjunction etc) form a tray.
+        // the position of a tray is represented by [start x pos, start y pos, end x pos, end y pos]
+        // for example, a corpse
+        // 1 2 3 a
+        // b c A B
+        // C a b c
+        // will generate {123: [[0, 0, 2, 0]], abc: [[3, 0, 1, 1], [1, 2, 3, 2]], ABC: [[2, 1, 0, 2]]}
 
         let type, last_type, word, desc, x;
         let last_x = 0;
@@ -157,6 +171,9 @@ void main() {
         }
 
         this.trayToPos = trayToPos
+
+        // filter trayToPos to obtain linkPlots
+        // linkPlots is the array to register visual links between trays
 
         let linkPlots = Object.entries(trayToPos)
             .filter((x) => (x[0].length > 1 && x[1][1].length > 1))
