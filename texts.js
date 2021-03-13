@@ -4,7 +4,7 @@ class Texts {
             this.write(Globals.raw.json[0])
         });
     }
-    write (text, fontSize=32, lineHeight=32, offset=15, len=44) {
+    write (text, fontSize=32, charHeight=32, charWidth=32, offset=15, len=44) {
         let lines = text.split("\n")
 
         let canvas = document.createElement('canvas');
@@ -12,12 +12,6 @@ class Texts {
 
         // 44 characters (wrap length), 1408 pixels
         const font = fontSize + "px NotoSans";
-        const maxWidth = measure("あ".repeat(len));
-
-        function measure (x) {
-            ctx.font = font;
-            return ctx.measureText(x).width;
-        }
 
         function change (x, y, n) {
             if (n > 0) {
@@ -33,40 +27,32 @@ class Texts {
         let segments = []
 
         for (let line of lines) {
-            while (true) {
+            while (line.length !== 0) {
                 let segment = line.slice(0, len)
-                let segmentWidth = measure(segment)
                 line = line.slice(len)
-                
-                if (line.length !== 0) {
-                    let amari = maxWidth - segmentWidth;
-                    if (Math.abs(amari) >= fontSize) {
-                        console.log("amari ga detayo")
-                        console.log(amari)
-                    }
-                    segments.push(segment)
-                } else {
-                    segments.push(segment)
-                    break
-                }
+                segments.push(segment)
             }
         }
-        
-        const width = maxWidth + offset*2;
-        const height = segments.length*lineHeight + offset*2;
+
+        const width = charWidth*len + offset*2;
+        const height = segments.length*charHeight + offset*2;
         canvas.width = width;
         canvas.height = height;
-        ctx.font = font;
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'hanging';
-        ctx.fillStyle = 'rgba(255, 255, 255, 1.0)';
-        ctx.fillText(text, offset, offset);
+
+        for (let segment of segments) {
+            ctx.font = font;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'hanging';
+            ctx.fillStyle = 'rgba(255, 255, 255, 1.0)';
+            ctx.fillText(segment, offset, offset);
+        }
+
         const texture = new THREE.CanvasTexture(canvas);
         texture.needsUpdate = false;
         texture.minFilter = THREE.LinearFilter;
         texture.magFilter = THREE.LinearFilter;
         texture.format = THREE.RGBAFormat;
-        console.log(texture);
+
         // TODO: dealloc canvas
         let geometry = new THREE.PlaneGeometry(width, height, 1, 1);
         let material = new THREE.RawShaderMaterial({

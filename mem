@@ -1,0 +1,5 @@
+set(re.findall("<.+?[ >]", d))
+{'<AppdxFigTitle ', '<StyleStructTitle ', '</RemarksLabel>', '<ArticleCaption ', '<RelatedArticleNum ', '<Note ', '<TableStructTitle ', '<RemarksLabel>', '<Sentence>', '<Fig ', '<ArticleRange ', '</TableStructTitle>', '<RemarksLabel ', '<NoteStructTitle ', '<ParagraphCaption ', '<Style ', '<FigStructTitle ', '<Sentence ', '<TableStructTitle>', '<Format ', '<Chapter ', '</Sentence>'}
+
+'Rt', 'Ruby', 'QuoteStruct', 'Sup', 'ArithFormula', 'Sub'
+

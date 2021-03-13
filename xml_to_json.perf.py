@@ -5,9 +5,6 @@ xmls = glob.glob('./all_xml/*/*.xml')
 xmls = list(reversed(sorted(xmls)))
 jsonobj = []
 output_txt = False
-get_nonempty_set = False
-nonempty_set = set()
-nonempty_set_child = set()
 
 def n(x):
     return x or ''
@@ -31,19 +28,24 @@ for i, fn in enumerate(xmls):
     tree = ET.fromstring(data)
     result = ''
     for elem in tree.iter():
+        append = ''
+
         text = n(elem.text)
         tail = n(elem.tail)
 
-        if elem.tag == "Ruby":
-            append = remove_last_spaces(tst(elem)).replace("\n", "").replace("<Ruby>", "$").replace("</Ruby>", "$").replace("<Rt>", "%").replace("</Rt>", "%").replace("<Rt/>", "%%")
-        elif elem.tag == "Rt":
-            append = ''
-        else:
-            append = (remove_last_spaces(text) + remove_last_spaces(tail)).replace("\n", "")
+        if elem.tag in ['Rt', 'Ruby', 'QuoteStruct', 'Sup', 'ArithFormula', 'Sub']: # elem is either Rt or Ruby
+            continue
 
+        if all(map(lambda x: x.tag in ['Ruby', 'QuoteStruct', 'Sup', 'ArithFormula', 'Sub'], elem)): # has only these direct child, or no child
+            append = innerXML(elem).replace("\n", "").replace("<Ruby>", "$").replace("</Ruby>", "$").replace("<Rt>", "%").replace("</Rt>", "%").replace("<Rt />", "").replace("<Rt/>", "")
+
+            if ("Ruby" in append):
+                print(tst(elem))
+                raise Exception("unhandled Ruby detected")
+            
             if elem.tag == "ItemTitle":
                 append = "#i#" + append
-
+            
             if elem.tag == "ParagraphNum":
                 append = "#p#" + append
 
@@ -54,14 +56,16 @@ for i, fn in enumerate(xmls):
             if m:
                 append = ("#s%s#" % m[1]) + append
 
-        if not is_only_spaces(append):
-            if get_nonempty_set:
-                nonempty_set.add(elem.tag)
-                for x in elem.iter():
-                    nonempty_set_child.add(x.tag)
-            
-            result += append + "\n"
-
+            if not is_only_spaces(append):
+                result += append + "\n"
+            else:
+                print("Unhandled empty tag")
+                print(tst(elem))
+        else:
+            if not is_only_spaces(text + tail):
+                print(tst(elem))
+                raise Exception("unhandled element with text exist")
+    
     jsonobj.append(result)
     if output_txt:
         with open('sample/%s.txt' % i, 'w') as f:
@@ -71,9 +75,3 @@ import json
 
 with open('out.json', 'w') as f:
     json.dump(jsonobj, f, indent=1, ensure_ascii=False)
-
-if get_nonempty_set:
-    with open('nonempty_set.txt', 'w') as f:
-        f.write(str(nonempty_set))
-    with open('nonempty_set_child.txt', 'w') as f:
-        f.write(str(nonempty_set_child))
