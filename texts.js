@@ -1,16 +1,22 @@
-class Textshow {
+class Texts {
     constructor () {
-        const fontSize = 32; // param
-        const offset = 15; // param
+        Globals.eventManagement.addListener("rawReadComplete", () => {
+            this.write(Globals.raw.json[0])
+        });
+    }
+    write (text, fontSize=32, offset=15, limit=1408, ) {
+        console.log(text)
+
+        let texts = text.split("\n")[0]
 
         let canvas = document.createElement('canvas');
         let ctx = canvas.getContext('2d');
-        // 44 characters (wrap length)
-        const text = "ああああいいいいああああいいいいああああいいいいああああいいいいああああいいいいいいいい";
+        // 44 characters (wrap length), 1408 pixels
         const font = fontSize + "px NotoSans";
         ctx.font = font;
         const measureWidth = ctx.measureText(text);
-        const width = measureWidth.width + offset*2;
+        console.log(measureWidth)
+        const width = limit + offset*2;
         const height = fontSize + offset*2;
         canvas.width = width;
         canvas.height = height;

@@ -19,9 +19,9 @@ class Game {
 
         // construct objects
         Globals.eventManagement = new EventManagement()
-        Globals.background = new Background()
-        Globals.textshow = new Textshow()
         Globals.raw = new Raw()
+        Globals.background = new Background()
+        Globals.texts = new Texts()
 
         // first frame: call animate func
         requestAnimationFrame((time) => {
