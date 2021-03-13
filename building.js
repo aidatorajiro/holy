@@ -1,6 +1,7 @@
 class Building {
     constructor (text) {
         this.plots = []
+        this.segments = []
         this.write(text)
     }
     write (text, fontSize=32, charHeight=32, charWidth=32, offset=15, len=44) {
@@ -23,13 +24,13 @@ class Building {
             }
         }
 
-        let segments = []
+        let segments = this.segments
 
         for (let line of lines) {
             while (line.length !== 0) {
                 let segment = line.slice(0, len)
                 line = line.slice(len)
-                // TODO: change
+                // TODO: change script
                 let regs = [[/\$/g, 1], [/\%/g, 1], [/^#.#/g, 3], [/^#..#/g, 4], [/^#...#/g, 5]]
                 for (let r of regs) {
                     let matches = [...segment.matchAll(r[0])]
