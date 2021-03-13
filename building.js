@@ -1,6 +1,7 @@
 class Building {
     constructor (text) {
         this.pointPlots = []
+        this.trayToPos = {}
         this.linkPlots = []
         this.segments = []
         this.write(text)
@@ -107,7 +108,7 @@ void main() {
         mesh.position.z = 1
     }
 
-    makeLinkPlots () {
+    async makeLinkPlots () {
         let child_process = require('child_process')
         let child = child_process.spawn("/usr/local/bin/mecab")
         function analyze (x) {
@@ -119,35 +120,49 @@ void main() {
             })
         }
 
-        (async () => {
-            let type, last_type, word, desc;
-            let tray = "";
-            let lst = {};
-            for (let i = 0; i < this.segments.length; i++) {
-                let segment = this.segments[i];
-                let res = String(await analyze(segment));
-                for (let s of res.split("\n")) {
-                    if (s === 'EOS' || s === '') {
-                        continue;
-                    }
-                    [word, desc] = s.split("\t")
-                    type = desc.split(",")[0]
-                    if (type === last_type || last_type === undefined) {
-                        tray += word
-                    } else if (tray !== '') {
-                        if (last_type !== '記号') {
-                            if (lst[tray] === undefined) {
-                                lst[tray] = [last_type, []]
-                            }
-                            lst[tray][1].push(i)
-                        }
-                        tray = ''
-                    }
-                    last_type = type;
+        let type, last_type, word, desc, x;
+        let last_x = 0;
+        let last_y = 0;
+        let tray = "";
+        let trayToPos = {};
+
+        for (let y = 0; y < this.segments.length; y++) {
+            x = 0
+            let segment = this.segments[y];
+            let res = String(await analyze(segment));
+            for (let s of res.split("\n")) {
+                if (s === 'EOS' || s === '') {
+                    continue;
                 }
+                [word, desc] = s.split("\t")
+                type = desc.split(",")[0]
+                if (type === last_type || last_type === undefined) {
+                    tray += word
+                    x += word.length
+                } else if (tray !== '') {
+                    if (last_type !== '記号') {
+                        if (trayToPos[tray] === undefined) {
+                            trayToPos[tray] = [last_type, []]
+                        }
+                        let lst = trayToPos[tray][1]
+                        lst.push([last_x, last_y, x, y])
+                    }
+                    tray = ''
+                    last_x = x
+                    last_y = y
+                }
+                last_type = type;
             }
-            console.log(lst)
-            child.stdin.end()
-        })();
+        }
+
+        this.trayToPos = trayToPos
+
+        let linkPlots = Object.entries(trayToPos)
+            .filter((x) => (x[0].length > 1 && x[1][1].length > 1))
+            .sort((x, y) => (y[1][1].length - x[1][1].length))
+
+        this.linkPlots = linkPlots
+
+        child.stdin.end()
     }
 }
