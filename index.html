@@ -16,7 +16,15 @@
 </head>
 <body>
     <div style="font-family: NotoSans; color: #00000001; position: absolute;">《ここに何か面白い文章を書く》</div>
-    <script src="three.js"></script>
+    <script>
+        if (window.require) {
+            window.THREE = require('three')
+        } else {
+            let s = document.createElement("script");
+            s.src = "three.min.js"
+            document.body.appendChild(s);
+        }
+    </script>
     <script src="raw.js"></script>
     <script src="eventmanagement.js"></script>
     <script src="background.js"></script>

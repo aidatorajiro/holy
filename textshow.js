@@ -51,12 +51,7 @@ precision mediump float;
 uniform sampler2D texture;
 varying vec2 vUv;
 void main() {
-    vec3 color = texture2D(texture, vUv).rgb;
-    if (color.r > 0.9 && color.g > 0.9 && color.b > 0.9) {
-        gl_FragColor = vec4(color, 1);
-    } else {
-        gl_FragColor = vec4(color, 0);
-    }
+    gl_FragColor = texture2D(texture, vUv);
 }
 `,
             transparent: true,

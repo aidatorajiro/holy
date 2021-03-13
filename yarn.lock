@@ -141,6 +141,15 @@ duplexer3@^0.1.4:
   resolved "https://registry.yarnpkg.com/duplexer3/-/duplexer3-0.1.4.tgz#ee01dd1cac0ed3cbc7fdbea37dc0a8f1ce002ce2"
   integrity sha1-7gHdHKwO08vH/b6jfcCo8c4ALOI=
 
+electron-nightly@^14.0.0-nightly.20210311:
+  version "14.0.0-nightly.20210311"
+  resolved "https://registry.yarnpkg.com/electron-nightly/-/electron-nightly-14.0.0-nightly.20210311.tgz#b4f74caf86da546a369b91dd4d74cd15f964a89b"
+  integrity sha512-yHD+jg3ufw+fpaRRxjI9Dgx02mmAVn4gxYNNV1FbxisfNwXuWd0KlTOc0SxRLr0heo7sgVwlTsivjnidl+6oIQ==
+  dependencies:
+    "@electron/get" "^1.0.1"
+    "@types/node" "^14.6.2"
+    extract-zip "^1.0.3"
+
 electron@^12.0.0:
   version "12.0.0"
   resolved "https://registry.yarnpkg.com/electron/-/electron-12.0.0.tgz#b3b1d88cc64622e59c637521da5a6b6ab4df4eb5"
@@ -516,6 +525,11 @@ sumchecker@^3.0.1:
   integrity sha512-MvjXzkz/BOfyVDkG0oFOtBxHX2u3gKbMHIF/dXblZsgD3BWOFLmHovIpZY7BykJdAjcqRCBi1WYBNdEC9yI7vg==
   dependencies:
     debug "^4.1.0"
+
+three@^0.126.1:
+  version "0.126.1"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.126.1.tgz#cf4e4e52060fd952f6f0d5440cbd422c66bc4be7"
+  integrity sha512-eOEXnZeE1FDV0XgL1u08auIP13jxdN9LQBAEmlErYzMxtIIfuGIAZbijOyookALUhqVzVOx0Tywj6n192VM+nQ==
 
 to-readable-stream@^1.0.0:
   version "1.0.0"
