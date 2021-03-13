@@ -1,8 +1,7 @@
-class Texts {
-    constructor () {
-        Globals.eventManagement.addListener("rawReadComplete", () => {
-            this.write(Globals.raw.json[0])
-        });
+class Building {
+    constructor (text) {
+        this.plots = []
+        this.write(text)
     }
     write (text, fontSize=32, charHeight=32, charWidth=32, offset=15, len=44) {
         let lines = text.split("\n")
@@ -23,13 +22,24 @@ class Texts {
                 return [x, y]
             }
         }
-        
+
         let segments = []
 
         for (let line of lines) {
             while (line.length !== 0) {
                 let segment = line.slice(0, len)
                 line = line.slice(len)
+                // TODO: change
+                let regs = [[/\$/g, 1], [/\%/g, 1], [/^#.#/g, 3], [/^#..#/g, 4], [/^#...#/g, 5]]
+                for (let r of regs) {
+                    let matches = [...segment.matchAll(r[0])]
+                    for (let m of matches) {
+                        this.plots.push([m[0], segments.length, m.index])
+                    }
+                }
+                for (let r of regs) {
+                    segment = segment.replace(r[0], "　".repeat(r[1]))
+                }
                 segments.push(segment)
             }
         }
@@ -39,12 +49,13 @@ class Texts {
         canvas.width = width;
         canvas.height = height;
 
-        for (let segment of segments) {
+        for (let i = 0; i < segments.length; i++) {
+            let segment = segments[i]
             ctx.font = font;
             ctx.textAlign = 'left';
             ctx.textBaseline = 'hanging';
             ctx.fillStyle = 'rgba(255, 255, 255, 1.0)';
-            ctx.fillText(segment, offset, offset);
+            ctx.fillText(segment, offset, offset + i*charHeight);
         }
 
         const texture = new THREE.CanvasTexture(canvas);

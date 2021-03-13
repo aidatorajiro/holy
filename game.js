@@ -19,9 +19,12 @@ class Game {
 
         // construct objects
         Globals.eventManagement = new EventManagement()
+        Globals.coordinator = new Coordinator()
         Globals.raw = new Raw()
         Globals.background = new Background()
-        Globals.texts = new Texts()
+        Globals.eventManagement.addListener("rawReadComplete", () => {
+            Globals.sample_building = new Building(Globals.raw.json[0])
+        });
 
         // first frame: call animate func
         requestAnimationFrame((time) => {
