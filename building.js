@@ -1,9 +1,12 @@
 class Building {
     constructor (text) {
-        this.plots = []
+        this.pointPlots = []
+        this.linkPlots = []
         this.segments = []
         this.write(text)
+        this.makeLinkPlots()
     }
+
     write (text, fontSize=32, charHeight=32, charWidth=32, offset=15, len=44) {
         let lines = text.split("\n")
 
@@ -26,19 +29,20 @@ class Building {
 
         let segments = this.segments
 
+        let regeps = [[/\$/g, 1], [/\%/g, 1], [/^#.#/g, 3], [/^#..#/g, 4], [/^#...#/g, 5]];
+
         for (let line of lines) {
             while (line.length !== 0) {
                 let segment = line.slice(0, len)
                 line = line.slice(len)
                 // TODO: change script
-                let regs = [[/\$/g, 1], [/\%/g, 1], [/^#.#/g, 3], [/^#..#/g, 4], [/^#...#/g, 5]]
-                for (let r of regs) {
+                for (let r of regeps) {
                     let matches = [...segment.matchAll(r[0])]
                     for (let m of matches) {
-                        this.plots.push([m[0], segments.length, m.index])
+                        this.pointPlots.push([m[0], segments.length, m.index])
                     }
                 }
-                for (let r of regs) {
+                for (let r of regeps) {
                     segment = segment.replace(r[0], "　".repeat(r[1]))
                 }
                 segments.push(segment)
@@ -101,5 +105,49 @@ void main() {
         Globals.scene.add(mesh);
 
         mesh.position.z = 1
+    }
+
+    makeLinkPlots () {
+        let child_process = require('child_process')
+        let child = child_process.spawn("/usr/local/bin/mecab")
+        function analyze (x) {
+            child.stdin.write(x + "\n")
+            return new Promise(function (res, rej) {
+                child.stdout.on("data", (data) => {
+                    res(data)
+                })
+            })
+        }
+
+        (async () => {
+            let type, last_type, word, desc;
+            let tray = "";
+            let lst = {};
+            for (let i = 0; i < this.segments.length; i++) {
+                let segment = this.segments[i];
+                let res = String(await analyze(segment));
+                for (let s of res.split("\n")) {
+                    if (s === 'EOS' || s === '') {
+                        continue;
+                    }
+                    [word, desc] = s.split("\t")
+                    type = desc.split(",")[0]
+                    if (type === last_type || last_type === undefined) {
+                        tray += word
+                    } else if (tray !== '') {
+                        if (last_type !== '記号') {
+                            if (lst[tray] === undefined) {
+                                lst[tray] = [last_type, []]
+                            }
+                            lst[tray][1].push(i)
+                        }
+                        tray = ''
+                    }
+                    last_type = type;
+                }
+            }
+            console.log(lst)
+            child.stdin.end()
+        })();
     }
 }
