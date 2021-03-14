@@ -25,12 +25,12 @@ class Game {
         Globals.background = new Background()
 
         // prepare kuromoji
-        kuromoji.builder({
+        /*kuromoji.builder({
             dicPath: './node_modules/kuromoji/dict'
         }).build(function(err, tokenizer) {
             if(err) { throw err; }
             Globals.tokenizer = tokenizer
-        });
+        });*/
 
         // sample building
         Globals.raw.event.addListener("load", (raw) => {
