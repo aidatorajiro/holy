@@ -1,14 +1,22 @@
 class Building {
-    constructor (text) {
-        this.pointPlots = []
-        this.trayToPos = {}
-        this.linkPlots = []
-        this.segments = []
-        this.write(text)
-        this.makeLinkPlots()
+    constructor (text, x, y, len) {
+        this.len = len
+        this.x = x
+        this.y = y
+        this.pointPlots = [];
+        this.trayToPos = {};
+        this.linkPlots = [];
+        this.segments = [];
+        this.write(text);
+        this.drawPointPlots();
+        (async () => {
+            await this.prepareLinkPlots();
+            this.drawLinkPlots();
+        })();
     }
 
-    write (text, fontSize=32, charHeight=32, charWidth=32, offset=15, len=44) {
+    write (text, fontSize=32, charHeight=32, charWidth=32, offset=15) {
+        let len = this.len
         let lines = text.split("\n")
 
         let canvas = document.createElement('canvas');
@@ -76,29 +84,8 @@ class Building {
             uniforms: {
               texture: { value: texture }
             },
-            vertexShader: `
-precision mediump float;
-
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
-attribute vec3 position;
-attribute vec2 uv;
-varying vec2 vUv;
-
-void main() {
-    vUv = uv;
-    vec3 pos = position;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-}
-`,
-            fragmentShader: `
-precision mediump float;
-uniform sampler2D texture;
-varying vec2 vUv;
-void main() {
-    gl_FragColor = texture2D(texture, vUv);
-}
-`,
+            vertexShader: Shaders.defaultVertexShader,
+            fragmentShader: Shaders.gradientBoxShader,
             transparent: true,
         });
 
@@ -106,9 +93,53 @@ void main() {
         Globals.scene.add(mesh);
 
         mesh.position.z = 1
+        mesh.position.x = this.x
+        mesh.position.y = this.y
     }
 
-    async makeLinkPlots () {
+    drawPointPlots () {
+        function r() {
+            return Math.random()
+        }
+        new THREE.TextureLoader().load( "assets/yari.png", (texture) => {
+            let width = 1000;
+            let geometry = new THREE.PlaneGeometry(width, texture.image.height, 1, 1);
+            let material = new THREE.RawShaderMaterial({
+                uniforms: {
+                  texture: { value: texture },
+                  coeff: { value: width / texture.image.width },
+//                  color: { value: new THREE.Vector4(0.3, 0.6, 0.5, 0.6) },
+//                  repeat: { value: new THREE.Vector4(0.2, -0.2, 0.2, -0.2) }
+                  color: { value: new THREE.Vector4(r(), r(), r(), 0.6) },
+                  repeat: { value: new THREE.Vector4(r()-0.5, r()-0.5, r()-0.5, r()-0.5) }
+                },
+                vertexShader: Shaders.defaultVertexShader,
+fragmentShader: `
+precision mediump float;
+uniform sampler2D texture;
+uniform vec4 repeat;
+uniform vec4 color;
+uniform float coeff;
+varying vec2 vUv;
+void main() {
+    float x0 = vUv.x*coeff;
+    vec4 n = cos(vec4(x0, x0, x0, x0)*vec4(1.0, 2.0, 3.0, 4.0))*repeat;
+    float x1 = fract(x0 + n.x + n.y +  n.z +  n.w);
+    gl_FragColor = texture2D(texture, vec2(x1, vUv.y));
+    gl_FragColor *= color;
+}
+`,
+                transparent: true,
+            });
+
+            let mesh = new THREE.Mesh(geometry, material);
+            Globals.scene.add(mesh);
+
+            mesh.position.z = 2
+        });
+    }
+
+    async prepareLinkPlots () {
         let child_process = require('child_process')
         let child = child_process.spawn("mecab")
         try {
@@ -183,5 +214,8 @@ void main() {
         } finally {
         child.stdin.end()
         }
+    }
+
+    drawLinkPlots () {
     }
 }

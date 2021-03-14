@@ -23,7 +23,7 @@ class Game {
         Globals.raw = new Raw()
         Globals.background = new Background()
         Globals.eventManagement.addListener("rawReadComplete", () => {
-            Globals.sample_building = new Building(Globals.raw.json[0])
+            Globals.sample_building = new Building(Globals.raw.json[0], 0, 0, 44)
         });
 
         // first frame: call animate func
