@@ -9,6 +9,10 @@ class Building {
         this.trayToPos = {};
         this.linkPlots = [];
         this.segments = [];
+        this.fontSize = 32;
+        this.charHeight = 32;
+        this.charWidth = 32;
+        this.offset = 15;
         this.write(text);
         this.drawPointPlots();
         (async () => {
@@ -17,7 +21,12 @@ class Building {
         })();
     }
 
-    write (text, fontSize=32, charHeight=32, charWidth=32, offset=15) {
+    write (text) {
+        let fontSize = this.fontSize
+        let charHeight = this.charHeight
+        let charWidth = this.charWidth
+        let offset = this.offset
+
         let len = this.len
         let lines = text.split("\n")
 
@@ -235,6 +244,27 @@ void main() {
     }
 
     drawLinkPlots () {
-        this.drawLink("ああああ", [-500, 0], [250, 100])
+        let ox = this.x + this.offset;
+        let oy = this.y + this.offset;
+        let convert = (params) => {
+            let [x1, y1, x2, y2] = params;
+            let x1c = ox + x1*this.charWidth
+            let y1c = oy + y1*this.charHeight
+            let x2c = ox + x2*this.charWidth 
+            let y2c = oy + y2*this.charHeight
+            return [x1c, y1c, x2c, y2c];
+        }
+        for (let [name, type_posList] of this.linkPlots) {
+            let [type, posList] = type_posList
+            for (let i = 0; i < posList.length - 1; i++) {
+                let pos_start = posList[i];
+                let pos_end = posList[i + 1];
+                
+                let [sx1, sy1, sx2, sy2] = convert(pos_start);
+                let [ex1, ey1, ex2, ey2] = convert(pos_end);
+
+                this.drawLink(type+name, [sx1, sy1], [ex1, ey1])
+            }
+        }
     }
 }

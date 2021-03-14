@@ -19,6 +19,7 @@ class Game {
 
         // construct objects
         Globals.event = new EventManagement()
+        Globals.hito = new Movement()
         Globals.coordinator = new Coordinator()
         Globals.raw = new Raw()
         Globals.background = new Background()
