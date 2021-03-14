@@ -2,9 +2,9 @@ const { app, BrowserWindow } = require('electron')
 
 const path = require("path")
 
-if (process.env.NODE_ENV == 'development') {
-  require('electron-reloader')(module)
-}
+//if (process.env.NODE_ENV == 'development') {
+//  require('electron-reloader')(module)
+//}
 
 function createWindow () {
   const win = new BrowserWindow({

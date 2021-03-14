@@ -22,8 +22,5 @@
   "dependencies": {
     "electron-nightly": "^14.0.0-nightly.20210311",
     "three": "^0.126.1"
-  },
-  "devDependencies": {
-    "electron-reloader": "^1.2.0"
   }
 }

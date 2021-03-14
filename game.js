@@ -18,34 +18,27 @@ class Game {
         document.body.appendChild(Globals.renderer.domElement)
 
         // construct objects
-        Globals.eventManagement = new EventManagement()
+        Globals.event = new EventManagement()
+        Globals.processManagement = new ProcessManagement()
         Globals.coordinator = new Coordinator()
         Globals.raw = new Raw()
         Globals.background = new Background()
-        Globals.eventManagement.addListener("rawReadComplete", () => {
-            Globals.sample_building = new Building(Globals.raw.json[0], 0, 0, 44)
+        Globals.raw.event.addListener("load", (raw) => {
+            Globals.sample_building = new Building(raw.json[0], 0, 0, 44)
         });
 
         // first frame: call animate func
         requestAnimationFrame((time) => {
-            // event handlers
-            window.addEventListener('resize', (ev) => {
-                Globals.eventManagement.runEvent('resize', ev)
-            }, false)
 
-            Globals.eventManagement.addListener('resize', this.resize)
+            let windowEvents = ['resize', 'mousedown', 'mouseup', 'keydown', 'keyup', 'beforeunload']
 
-            window.addEventListener('mousedown', function (ev) {
-                Globals.eventManagement.runEvent('mousedown', ev)
-            }, false)
+            for (let name of windowEvents) {
+                window.addEventListener(name, function (ev) {
+                    Globals.event.runEvent(name, ev)
+                }, false)
+            }
 
-            window.addEventListener('keydown', function (ev) {
-                Globals.eventManagement.runEvent('keydown', ev)
-            }, false)
-
-            window.addEventListener('keyup', function (ev) {
-                Globals.eventManagement.runEvent('keyup', ev)
-            }, false)
+            Globals.event.addListener('resize', this.resize)
 
             this.animate(time)
         })
@@ -75,7 +68,7 @@ class Game {
             Globals.time = time
         }
 
-        Globals.eventManagement.runEvent('animate', {delta: Globals.delta, time: time})
+        Globals.event.runEvent('animate', {delta: Globals.delta, time: time})
 
         Globals.renderer.render( Globals.scene, Globals.camera );
     }
