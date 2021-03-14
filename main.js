@@ -1,5 +1,7 @@
 const { app, BrowserWindow } = require('electron')
 
+const path = require("path")
+
 if (process.env.NODE_ENV == 'development') {
   require('electron-reloader')(module)
 }
@@ -10,7 +12,8 @@ function createWindow () {
     height: 600,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
+//      preload: path.join(app.getAppPath(), 'preload.js')
     }
   })
 

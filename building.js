@@ -3,6 +3,8 @@ class Building {
         this.len = len
         this.x = x
         this.y = y
+        this.textmesh = undefined;
+        this.linkmeshes = [];
         this.pointPlots = [];
         this.trayToPos = {};
         this.linkPlots = [];
@@ -85,7 +87,7 @@ class Building {
               texture: { value: texture }
             },
             vertexShader: Shaders.defaultVertexShader,
-            fragmentShader: Shaders.gradientBoxShader,
+            fragmentShader: Shaders.defaultFragmentShader,
             transparent: true,
         });
 
@@ -95,48 +97,11 @@ class Building {
         mesh.position.z = 1
         mesh.position.x = this.x
         mesh.position.y = this.y
+
+        this.textmesh = mesh
     }
 
     drawPointPlots () {
-        function r() {
-            return Math.random()
-        }
-        new THREE.TextureLoader().load( "assets/yari.png", (texture) => {
-            let width = 1000;
-            let geometry = new THREE.PlaneGeometry(width, texture.image.height, 1, 1);
-            let material = new THREE.RawShaderMaterial({
-                uniforms: {
-                  texture: { value: texture },
-                  coeff: { value: width / texture.image.width },
-//                  color: { value: new THREE.Vector4(0.3, 0.6, 0.5, 0.6) },
-//                  repeat: { value: new THREE.Vector4(0.2, -0.2, 0.2, -0.2) }
-                  color: { value: new THREE.Vector4(r(), r(), r(), 0.6) },
-                  repeat: { value: new THREE.Vector4(r()-0.5, r()-0.5, r()-0.5, r()-0.5) }
-                },
-                vertexShader: Shaders.defaultVertexShader,
-fragmentShader: `
-precision mediump float;
-uniform sampler2D texture;
-uniform vec4 repeat;
-uniform vec4 color;
-uniform float coeff;
-varying vec2 vUv;
-void main() {
-    float x0 = vUv.x*coeff;
-    vec4 n = cos(vec4(x0, x0, x0, x0)*vec4(1.0, 2.0, 3.0, 4.0))*repeat;
-    float x1 = fract(x0 + n.x + n.y +  n.z +  n.w);
-    gl_FragColor = texture2D(texture, vec2(x1, vUv.y));
-    gl_FragColor *= color;
-}
-`,
-                transparent: true,
-            });
-
-            let mesh = new THREE.Mesh(geometry, material);
-            Globals.scene.add(mesh);
-
-            mesh.position.z = 2
-        });
     }
 
     async prepareLinkPlots () {
@@ -217,5 +182,40 @@ void main() {
     }
 
     drawLinkPlots () {
+        let r = Utils.rnd("ああああ")
+        new THREE.TextureLoader().load( "assets/yari.png", (texture) => {
+            let width = 1000;
+            let geometry = new THREE.PlaneGeometry(width, texture.image.height, 1, 1);
+            let material = new THREE.RawShaderMaterial({
+                uniforms: {
+                  texture: { value: texture },
+                  coeff: { value: width / texture.image.width },
+                  color: { value: new THREE.Vector4(r(), r(), r(), r() * 0.5) },
+                  repeat: { value: new THREE.Vector4(r()-0.5, r()-0.5, r()-0.5, r()-0.5) }
+                },
+                vertexShader: Shaders.defaultVertexShader,
+fragmentShader: `
+precision mediump float;
+uniform sampler2D texture;
+uniform vec4 repeat;
+uniform vec4 color;
+uniform float coeff;
+varying vec2 vUv;
+void main() {
+    float x0 = vUv.x*coeff;
+    vec4 n = cos(vec4(x0, x0, x0, x0)*vec4(1.0, 2.0, 3.0, 4.0))*repeat;
+    float x1 = fract(x0 + n.x + n.y +  n.z +  n.w);
+    gl_FragColor = texture2D(texture, vec2(x1, vUv.y));
+    gl_FragColor *= color;
+}
+`,
+                transparent: true,
+            });
+
+            let mesh = new THREE.Mesh(geometry, material);
+            Globals.scene.add(mesh);
+
+            mesh.position.z = 2
+        });
     }
 }
