@@ -23,6 +23,16 @@ class Game {
         Globals.coordinator = new Coordinator()
         Globals.raw = new Raw()
         Globals.background = new Background()
+
+        // prepare kuromoji
+        kuromoji.builder({
+            dicPath: './node_modules/kuromoji/dict'
+        }).build(function(err, tokenizer) {
+            if(err) { throw err; }
+            Globals.tokenizer = tokenizer
+        });
+
+        // sample building
         Globals.raw.event.addListener("load", (raw) => {
             Globals.sample_building = new Building(raw.json[0], 0, 0, 44)
         });

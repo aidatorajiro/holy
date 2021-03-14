@@ -105,22 +105,24 @@ class Building {
     }
 
     async prepareLinkPlots () {
-        let child = Globals.processManagement.spawn("mecab");
+        let child = Preload.spawnMecab();
 
         let resolve = (_) => {}, reject = (_) => {};
 
-        child.stdout.on("data", (data) => {
-            resolve(data)
+        let decoder = new TextDecoder();
+
+        Preload.getOutput(child, (data) => {
+            resolve(decoder.decode(data))
         })
 
-        child.stderr.on("data", (data) => {
-            reject(data)
+        Preload.getError(child, (data) => {
+            reject(decoder.decode(data))
         })
 
         // analyze text via mecab 0.996
 
         function analyze (x) {
-            child.stdin.write(x + "\n")
+            Preload.writeTo(child, x + "\n")
             return new Promise(function (res, rej) {
                 resolve = res;
                 reject = rej;
@@ -185,7 +187,7 @@ class Building {
 
             this.linkPlots = linkPlots
         } finally {
-            child.stdin.end()
+            Preload.endInput(child)
         }
     }
 

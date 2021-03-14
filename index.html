@@ -17,13 +17,20 @@
 <body>
     <div style="font-family: NotoSans; color: #00000001; position: absolute;">《ここに何か面白い文章を書く》</div>
     <script>
-        if (window.THREE !== undefined) {
-            console.log("using preloaded THREE")
-        } else if (window.require !== undefined) {
+        if (window.require !== undefined) {
             window.THREE = require('three')
         } else {
             let s = document.createElement("script");
             s.src = "three.min.js"
+            document.body.appendChild(s);
+        }
+    </script>
+    <script>
+        if (window.require !== undefined) {
+            window.kuromoji = require('kuromoji')
+        } else {
+            let s = document.createElement("script");
+            s.src = "kuromoji.js"
             document.body.appendChild(s);
         }
     </script>
