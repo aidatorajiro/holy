@@ -7,10 +7,6 @@ const { env } = require('process')
 //  require('electron-reloader')(module)
 //}
 
-// disable all "local" shortcuts
-const menu = Menu.buildFromTemplate([])
-Menu.setApplicationMenu(menu)
-
 function createWindow () {
   const win = new BrowserWindow({
     width: 800,
@@ -22,20 +18,43 @@ function createWindow () {
     }
   })
 
-  let quit = function() {
+  let quitApp = function() {
     win.close();
     app.quit();
   }
 
-  // add cmd+r, cmd+q, alt+cmd+i as "global" shortcut
-  globalShortcut.register('CmdOrCtrl+r', quit);
-
-  globalShortcut.register('CmdOrCtrl+q', quit);
-
+  // disable all "local" shortcuts
   if (env.NODE_ENV === 'development') {
-    globalShortcut.register('Alt+CommandOrControl+I', function () {
-      win.webContents.openDevTools()
-    });
+    // for development, add opt+cmt+i, cmd+r, cmd+q as "local" shortcut
+    // never reload, because reloading causes serious child_process issues
+    const menu = Menu.buildFromTemplate([
+      {
+        label: 'Electron',
+        submenu: [{
+          role: 'DevTool',
+          accelerator: 'Alt+CommandOrControl+I',
+          click: function () {
+            win.webContents.openDevTools()
+          }
+        }, {
+          role: 'Quit',
+          accelerator: 'CommandOrControl+q',
+          click: quitApp
+        }, {
+          role: 'Quit',
+          accelerator: 'CommandOrControl+r',
+          click: quitApp
+        }]
+      }
+    ])
+    Menu.setApplicationMenu(menu)
+  } else {
+    // for production, add cmd+r, cmd+q as "global" shortcut
+    // never reload, because reloading causes serious child_process issues
+    const menu = Menu.buildFromTemplate([])
+    Menu.setApplicationMenu(menu)
+    globalShortcut.register('CmdOrCtrl+r', quitApp);
+    globalShortcut.register('CmdOrCtrl+q', quitApp);
   }
 
   win.loadFile('index.html')
@@ -50,7 +69,4 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-  //if (BrowserWindow.getAllWindows().length === 0) {
-  //  createWindow()
-  //}
 })
