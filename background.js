@@ -42,7 +42,7 @@ void main() {
     //float r = fract(sin(dot(vUv.xy, vec2(171717.0,777777.0))));
     float r = sin(dot(vUv.xy, dotvec));
     vec2 v = vec2(vUv.x + r/far.x, vUv.y + r/far.y);
-    vec3 color = texture2D(texture, v).rgb;
+    vec3 color = texture2D(texture, v).rgb*0.8;
     gl_FragColor = vec4(color, 1);
 }
 `,

@@ -1,5 +1,7 @@
 class Building {
     constructor (text, x, y, len) {
+        this.width = undefined
+        this.height = undefined
         this.len = len
         this.x = x
         this.y = y
@@ -73,6 +75,8 @@ class Building {
         const height = segments.length*charHeight + offset*2;
         canvas.width = width;
         canvas.height = height;
+        this.width = width;
+        this.height = height;
 
         for (let i = 0; i < segments.length; i++) {
             let segment = segments[i]
@@ -203,13 +207,14 @@ class Building {
     drawLink (seed, start, end) {
         let r = Utils.rnd(seed)
         new THREE.TextureLoader().load( "assets/yari.png", (texture) => {
-            let width = 1000;
-            let geometry = new THREE.PlaneGeometry(width, texture.image.height, 1, 1);
+            let d = (x, y) => (Math.sqrt((x-y)*(x-y)))
+            let width = d(start[0] - end[0], start[1] - end[1])
+            let geometry = new THREE.PlaneGeometry(width, texture.image.height/2, 1, 1);
             let material = new THREE.RawShaderMaterial({
                 uniforms: {
                   texture: { value: texture },
                   coeff: { value: width / texture.image.width },
-                  color: { value: new THREE.Vector4(r(), r(), r(), r() * 0.5) },
+                  color: { value: new THREE.Vector4(r(), r(), r(), 0.2) },
                   repeat: { value: new THREE.Vector4(r()-0.5, r()-0.5, r()-0.5, r()-0.5) }
                 },
                 vertexShader: Shaders.defaultVertexShader,
@@ -244,8 +249,8 @@ void main() {
     }
 
     drawLinkPlots () {
-        let ox = this.x + this.offset;
-        let oy = this.y + this.offset;
+        let ox = this.x + this.offset - this.width/2;
+        let oy = this.y + this.offset - this.height/2;
         let convert = (params) => {
             let [x1, y1, x2, y2] = params;
             let x1c = ox + x1*this.charWidth
@@ -263,7 +268,8 @@ void main() {
                 let [sx1, sy1, sx2, sy2] = convert(pos_start);
                 let [ex1, ey1, ex2, ey2] = convert(pos_end);
 
-                this.drawLink(type+name, [sx1, sy1], [ex1, ey1])
+                this.drawLink(type+name, [sx1, sy1], [ex2, ey2])
+                this.drawLink(type+name, [sx2, sy2], [ex1, ey1])
             }
         }
     }
