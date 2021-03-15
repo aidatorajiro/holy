@@ -44,7 +44,7 @@ varying vec2 vUv;
 void main() {
     vec2 vUvS = vUv*scale + (-scale + 1.0)/2.0 + pos;
     float r = sin(dot(vUvS.xy, dotvec));
-    vec2 v = vec2(vUvS.x + r/far.x, vUvS.y + r/far.y);
+    vec2 v = fract(vec2(vUvS.x + r/far.x, vUvS.y + r/far.y));
     vec3 color = texture2D(texture, v).rgb*0.8;
     gl_FragColor = vec4(color, 1);
 }
@@ -58,6 +58,8 @@ void main() {
             mesh.position.z = 0
 
             this.mesh = mesh
+            this.mesh.position.x = Globals.camera.position.x
+            this.mesh.position.y = Globals.camera.position.y
         } );
 
         Globals.event.addListener("animate", () => {
