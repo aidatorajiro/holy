@@ -26,7 +26,7 @@ let Utils = {
         }
     },
     xmur3: function (str) {
-        str = new TextEncoder().encode(str); // or Buffer.from
+        str = new TextEncoder().encode(str); // or Buffer.from, if using node
         for(var i = 0, h = 1779033703 ^ str.length; i < str.length; i++) {
             h = Math.imul(h ^ str[i], 3432918353);
             h = h << 13 | h >>> 19;

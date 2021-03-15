@@ -11,6 +11,7 @@ function createWindow () {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    fullscreen: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -24,37 +25,18 @@ function createWindow () {
   }
 
   // disable all "local" shortcuts
+  const menu = Menu.buildFromTemplate([])
+  Menu.setApplicationMenu(menu)
+
+  // for development, add opt+cmt+i, cmd+r, cmd+q as "global" shortcut
+  // never reload, because reloading causes serious child_process issues
+  globalShortcut.register('CmdOrCtrl+r', quitApp);
+  globalShortcut.register('CmdOrCtrl+q', quitApp);
+
   if (env.NODE_ENV === 'development') {
-    // for development, add opt+cmt+i, cmd+r, cmd+q as "local" shortcut
-    // never reload, because reloading causes serious child_process issues
-    const menu = Menu.buildFromTemplate([
-      {
-        label: 'Electron',
-        submenu: [{
-          role: 'DevTool',
-          accelerator: 'Alt+CommandOrControl+I',
-          click: function () {
-            win.webContents.openDevTools()
-          }
-        }, {
-          role: 'Quit',
-          accelerator: 'CommandOrControl+q',
-          click: quitApp
-        }, {
-          role: 'Quit',
-          accelerator: 'CommandOrControl+r',
-          click: quitApp
-        }]
-      }
-    ])
-    Menu.setApplicationMenu(menu)
-  } else {
-    // for production, add cmd+r, cmd+q as "global" shortcut
-    // never reload, because reloading causes serious child_process issues
-    const menu = Menu.buildFromTemplate([])
-    Menu.setApplicationMenu(menu)
-    globalShortcut.register('CmdOrCtrl+r', quitApp);
-    globalShortcut.register('CmdOrCtrl+q', quitApp);
+    globalShortcut.register('Alt+CmdOrCtrl+I', function () {
+      win.webContents.openDevTools()
+    });
   }
 
   win.loadFile('index.html')

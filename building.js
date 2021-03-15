@@ -1,20 +1,30 @@
 class Building {
-    constructor (text, x, y, len) {
+    constructor (text, x, y, len, fontSize=32, charHeight=32, charWidth=32, offset=15) {
+        // texts
         this.width = undefined
         this.height = undefined
         this.len = len
         this.x = x
         this.y = y
         this.textMesh = undefined;
-        this.linkMeshes = [];
-        this.pointPlots = [];
-        this.trayToPos = {};
-        this.linkPlots = [];
         this.segments = [];
-        this.fontSize = 32;
-        this.charHeight = 32;
-        this.charWidth = 32;
-        this.offset = 15;
+        this.fontSize = fontSize;
+        this.charHeight = charHeight;
+        this.charWidth = charWidth;
+        this.offset = offset;
+        this.newlines = new Set();
+        this.processedText = undefined;
+
+        // Trays
+        this.linkMeshes = [];
+        this.linkPlots = [];
+        this.trayToPos = {};
+
+        // points
+        this.pointPlots = [];
+        this.pointMeshes = []
+
+        // function
         this.write(text);
         this.drawPointPlots();
         (async () => {
@@ -51,7 +61,7 @@ class Building {
 
         let segments = this.segments
 
-        let regeps = [[/\$/g, 1], [/\%/g, 1], [/^#.#/g, 3], [/^#..#/g, 4], [/^#...#/g, 5]];
+        let regeps = [[/\$/gm, "　"], [/\%/gm, "　"], [/^#.#/gm, "　　　"], [/^#..#/gm, "　　　　"], [/^#...#/gm, "　　　　　"]];
 
         for (let line of lines) {
             while (line.length !== 0) {
@@ -65,10 +75,16 @@ class Building {
                     }
                 }
                 for (let r of regeps) {
-                    segment = segment.replace(r[0], "　".repeat(r[1]))
+                    segment = segment.replace(r[0], r[1])
                 }
                 segments.push(segment)
             }
+            this.newlines.add(segments.length - 1)
+        }
+
+        this.processedText = text
+        for (let r of regeps) {
+            this.processedText = this.processedText.replace(r[0], r[1])
         }
 
         const width = charWidth*len + offset*2;
@@ -111,7 +127,42 @@ class Building {
         mesh.position.x = this.x
         mesh.position.y = this.y
 
-        this.textmesh = mesh
+        this.textMesh = mesh
+    }
+
+    // convert character position to scene position
+    convert (x, y) {
+        let ox = this.x + this.offset - this.width/2;
+        let oy = this.y - this.offset + this.height/2;
+        let xc = ox + x*this.charWidth
+        let yc = oy - y*this.charHeight
+        return [xc, yc];
+    }
+
+    drawPoint (seed, asset, x, y) {
+        let r = Utils.rnd(seed)
+
+        new THREE.TextureLoader().load( asset, (texture) => {
+
+            let geometry = new THREE.PlaneGeometry(texture.image.width, texture.image.height, 1, 1);
+            let material = new THREE.RawShaderMaterial({
+                uniforms: {
+                    texture: { value: texture }
+                },
+                vertexShader: Shaders.defaultVertexShader,
+                fragmentShader: Shaders.defaultFragmentShader,
+                transparent: true,
+            });
+
+            let mesh = new THREE.Mesh(geometry, material);
+            Globals.scene.add(mesh);
+
+            mesh.position.x = x
+            mesh.position.y = y
+            mesh.position.z = 2
+
+            this.pointMeshes.push(mesh)
+        });
     }
 
     drawPointPlots () {
@@ -120,101 +171,130 @@ class Building {
     async prepareLinkPlots () {
         let child = Preload.spawnMecab();
 
-        let resolve = (_) => {}, reject = (_) => {};
-
         let decoder = new TextDecoder();
-
-        Preload.getOutput(child, (data) => {
-            resolve(decoder.decode(data))
-        })
-
-        Preload.getError(child, (data) => {
-            reject(decoder.decode(data))
-        })
 
         // analyze text via mecab 0.996
 
         function analyze (x) {
             Preload.writeTo(child, x + "\n")
+            Preload.endInput(child)
             return new Promise(function (res, rej) {
-                resolve = res;
-                reject = rej;
+                let succ = "";
+                let fail = "";
+                Preload.onExit(child, (code) => {
+                    if (code === 0) {
+                        res(succ)
+                    } else {
+                        rej(fail)
+                    }
+                })
+                Preload.getOutput(child, (data) => {
+                    succ += data
+                })
+                Preload.getError(child, (data) => {
+                    fail += data
+                })
             })
         }
 
-        try {
-            // parse mecab output to generate trayToPos
-            // trayToPos is a hashmap that maps trays to the positions of them in the text.
-            // trays are combinations of words, calculated from the mecab output. 
-            // consecutive words with the same type (e.g. verb, noun, adjunction etc) form a tray.
-            // the position of a tray is represented by [start x pos, start y pos, end x pos, end y pos]
-            // for example, a corpse
-            // 1 2 3 a
-            // b c A B
-            // C a b c
-            // will generate {123: [[0, 0, 2, 0]], abc: [[3, 0, 1, 1], [1, 2, 3, 2]], ABC: [[2, 1, 0, 2]]}
+        // parse mecab output to generate trayToPos
+        // trayToPos is a hashmap that maps trays to the positions of them in the text.
+        // trays are combinations of words, calculated from the mecab output. 
+        // consecutive words with the same type (e.g. verb, noun, adjunction etc) form a tray.
+        // the position of a tray is represented by [start x pos, start y pos, end x pos, end y pos]
+        // for example, a corpse
+        // 1 2 3 a
+        // b c A B
+        // C a b c
+        // will generate {123: [[0, 0, 2, 0]], abc: [[3, 0, 1, 1], [1, 2, 3, 2]], ABC: [[2, 1, 0, 2]]}
 
-            let type, last_type, word, desc, x;
-            let last_x = 0;
-            let last_y = 0;
-            let tray = "";
-            let trayToPos = {};
+        let trayToPos = {}
 
-            for (let y = 0; y < this.segments.length; y++) {
-                x = 0
-                let segment = this.segments[y];
-                let res = String(await analyze(segment));
-                for (let s of res.split("\n")) {
-                    if (s === 'EOS' || s === '') {
-                        continue;
+        let result = await analyze(this.processedText);
+
+        let last_type = undefined;
+
+        let tray = undefined;
+
+        let start_x = 0;
+
+        let start_y = 0;
+
+        let x = 0;
+
+        let y = 0;
+
+        let combination = 0;
+
+        for (let r of result.split('\n')) {
+
+            if (r === 'EOS') {
+                //dosomething
+                last_type = undefined
+                continue
+            }
+            if (r === '') {
+                continue
+            }
+            let [word, description] = r.split('\t')
+            let type = description.split(',')[0]
+
+            if (last_type === type) {
+                tray += word
+                combination += 1;
+            } else {
+                if (combination > 1 && last_type !== undefined && last_type !== '記号') {
+                    if (trayToPos[tray] === undefined) {
+                        trayToPos[tray] = [last_type, []]
                     }
-                    [word, desc] = s.split("\t")
-                    type = desc.split(",")[0]
-                    if (type === last_type || last_type === undefined) {
-                        tray += word
-                        x += word.length
-                    } else if (tray !== '') {
-                        if (last_type !== '記号') {
-                            if (trayToPos[tray] === undefined) {
-                                trayToPos[tray] = [last_type, []]
-                            }
-                            let lst = trayToPos[tray][1]
-                            lst.push([last_x, last_y, x, y])
-                        }
-                        tray = ''
-                        last_x = x
-                        last_y = y
-                    }
-                    last_type = type;
+                    trayToPos[tray][1].push([start_x, start_y])
                 }
+                combination = 1;
+                tray = word
+                start_x = x
+                start_y = y
             }
 
-            this.trayToPos = trayToPos
+            last_type = type;
 
-            // filter trayToPos to obtain linkPlots
-            // linkPlots is the array to register visual links between trays
+            //console.log(x, y, tray, word, type)
 
-            let linkPlots = Object.entries(trayToPos)
-                .filter((x) => (x[0].length > 1 && x[1][1].length > 1))
-                .sort((x, y) => (y[1][1].length - x[1][1].length))
+            x += word.length
 
-            this.linkPlots = linkPlots
-        } finally {
-            Preload.endInput(child)
+            if (x > this.segments[y].length - 1) {
+                x -= this.segments[y].length
+                y += 1
+                if (this.segments[y] === undefined) {
+                    console.log("warning: y overflowed before EOS", this)
+                    break
+                }
+            }
+            
         }
+
+        this.trayToPos = trayToPos
+
+        // filter trayToPos to obtain linkPlots
+        // linkPlots is the array to register visual links between trays
+
+        let linkPlots = Object.entries(trayToPos)
+            .filter((x) => (x[0].length > 1 && x[1][1].length > 1))
+            .sort((x, y) => (y[1][1].length - x[1][1].length))
+
+        this.linkPlots = linkPlots
     }
 
-    drawLink (seed, start, end) {
+    drawLink (seed, asset, start, end) {
         let r = Utils.rnd(seed)
-        new THREE.TextureLoader().load( "assets/yari.png", (texture) => {
+        new THREE.TextureLoader().load( asset, (texture) => {
             let d = (x, y) => (Math.sqrt((x-y)*(x-y)))
             let width = d(start[0] - end[0], start[1] - end[1])
-            let geometry = new THREE.PlaneGeometry(width, texture.image.height/2, 1, 1);
+            let geometry = new THREE.PlaneGeometry(width, texture.image.height, 1, 1);
             let material = new THREE.RawShaderMaterial({
                 uniforms: {
                   texture: { value: texture },
                   coeff: { value: width / texture.image.width },
-                  color: { value: new THREE.Vector4(r(), r(), r(), 0.2) },
+                  color: { value: new THREE.Vector4(r(), r(), r(), 0.1) },
                   repeat: { value: new THREE.Vector4(r()-0.5, r()-0.5, r()-0.5, r()-0.5) }
                 },
                 vertexShader: Shaders.defaultVertexShader,
@@ -249,27 +329,26 @@ void main() {
     }
 
     drawLinkPlots () {
-        let ox = this.x + this.offset - this.width/2;
-        let oy = this.y + this.offset - this.height/2;
-        let convert = (params) => {
-            let [x1, y1, x2, y2] = params;
-            let x1c = ox + x1*this.charWidth
-            let y1c = oy + y1*this.charHeight
-            let x2c = ox + x2*this.charWidth 
-            let y2c = oy + y2*this.charHeight
-            return [x1c, y1c, x2c, y2c];
-        }
-        for (let [name, type_posList] of this.linkPlots) {
+        let [a1, a2] = this.convert(5, 5);
+        let [a3, a4] = this.convert(7, 130);
+        this.drawLink("あああああ", "assets/yari.png", [a1, a2], [a3, a4])
+        this.drawPoint("あああああ", "assets/point.png", a1, a2)
+        this.drawPoint("あああああ", "assets/point.png", a3, a4)
+        for (let j = 0; j < this.linkPlots.length - 1; j++) {
+            let [name, type_posList] = this.linkPlots[j]
             let [type, posList] = type_posList
             for (let i = 0; i < posList.length - 1; i++) {
-                let pos_start = posList[i];
-                let pos_end = posList[i + 1];
+                let [sx, sy] = posList[i];
+                let [ex, ey] = posList[i + 1];
                 
-                let [sx1, sy1, sx2, sy2] = convert(pos_start);
-                let [ex1, ey1, ex2, ey2] = convert(pos_end);
+                [sx, sy] = this.convert(sx, sy);
+                [ex, ey] = this.convert(ex, ey);
 
-                this.drawLink(type+name, [sx1, sy1], [ex2, ey2])
-                this.drawLink(type+name, [sx2, sy2], [ex1, ey1])
+                if (j < 10) {
+                    this.drawPoint(String(j)+type+name, "assets/point.png", sx, sy)
+                }
+
+                this.drawLink(type+name, "assets/yari.png", [sx, sy], [ex, ey])
             }
         }
     }

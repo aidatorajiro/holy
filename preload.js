@@ -18,9 +18,12 @@ contextBridge.exposeInMainWorld('Preload', {
     processes[rand].stdin.end();
   },
   getOutput: (rand, callback) => {
-    processes[rand].stdout.on("data", callback);
+    processes[rand].stdout.on("data", data => callback(String(data)));
   },
   getError: (rand, callback) => {
-    processes[rand].stderr.on("data", callback);
-  }
+    processes[rand].stderr.on("data", data => callback(String(data)));
+  },
+  onExit: (rand, callback) => {
+    processes[rand].on("exit", code => callback(code));
+  },
 })
