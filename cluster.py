@@ -5,10 +5,10 @@ with open('out.json', 'r') as f:
 
 names = []
 
-for x in obj:
-    names.append(x.split("\n")[1])
+for i, x in enumerate(obj):
+    names.append([i, x.split("\n")[1]])
 
-names = sorted(names)
+names = sorted(names, key=lambda x: x[1])
 
 num_map = {}
 
@@ -17,6 +17,7 @@ first_map = {}
 takelen = 2
 
 for (i, n) in enumerate(names):
+    n = n[1]
     s = n[0:takelen]
     if not s in first_map:
         first_map[s] = i
