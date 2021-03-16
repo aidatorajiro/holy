@@ -1,3 +1,11 @@
+# build memo
+
+python3 xml_to_json.py
+
+python3 cluster.py
+
+python3 small.py
+
 # Libraries/Softwares licenses
 
 ## Electron <https://www.electronjs.org/>
