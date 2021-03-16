@@ -1,10 +1,12 @@
 # build memo
 
-python3 xml_to_json.py
+python3 xml_to_json.py  --  yields out.json
 
-python3 cluster.py
+python3 cluster.py  --  yields names.json
 
-python3 small.py
+( python3 small.py )
+
+python3 batches.py  --  yields batches/*.json and batches/len.txt
 
 # Libraries/Softwares licenses
 
