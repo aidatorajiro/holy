@@ -1,5 +1,5 @@
 class Building {
-    constructor (text, x, y, len, fontSize=32, charHeight=32, charWidth=32, offset=15) {
+    constructor (text, x, y, len=44, fontSize=32, charHeight=32, charWidth=32, offset=15) {
         // texts
         this.width = undefined
         this.height = undefined
@@ -139,9 +139,7 @@ class Building {
         return [xc, yc];
     }
 
-    drawPoint (seed, asset, x, y) {
-        let r = Utils.rnd(seed)
-
+    drawPoint (r, asset, x, y) {
         new THREE.TextureLoader().load( asset, (texture) => {
 
             let geometry = new THREE.PlaneGeometry(texture.image.width, texture.image.height, 1, 1);
@@ -284,8 +282,7 @@ class Building {
         this.linkPlots = linkPlots
     }
 
-    drawLink (seed, asset, start, end) {
-        let r = Utils.rnd(seed)
+    drawLink (r, asset, start, end) {
         new THREE.TextureLoader().load( asset, (texture) => {
             let d = (x, y) => (Math.sqrt((x-y)*(x-y)))
             let width = d(start[0] - end[0], start[1] - end[1])
@@ -294,7 +291,7 @@ class Building {
                 uniforms: {
                   texture: { value: texture },
                   coeff: { value: width / texture.image.width },
-                  color: { value: new THREE.Vector4(r(), r(), r(), 0.1) },
+                  color: { value: new THREE.Vector4(r(), r(), r(), 0.4) },
                   repeat: { value: new THREE.Vector4(r()-0.5, r()-0.5, r()-0.5, r()-0.5) }
                 },
                 vertexShader: Shaders.defaultVertexShader,
@@ -329,11 +326,18 @@ void main() {
     }
 
     drawLinkPlots () {
-        let [a1, a2] = this.convert(5, 5);
-        let [a3, a4] = this.convert(7, 130);
-        this.drawLink("あああああ", "assets/yari.png", [a1, a2], [a3, a4])
-        this.drawPoint("あああああ", "assets/point.png", a1, a2)
-        this.drawPoint("あああああ", "assets/point.png", a3, a4)
+        let conv_table = {
+            "名詞": ["assets/conv/y2.png", "assets/conv/y3.png", "assets/conv/y7.png"],
+            "助動詞": ["assets/conv/y5.png"],
+            "助詞": ["assets/conv/y6.png"],
+            "動詞": ["assets/conv/y1.png", "assets/conv/y4.png"],
+            "otherwise": ["assets/yari.png"]
+        }
+        //let [a1, a2] = this.convert(5, 5);
+        //let [a3, a4] = this.convert(7, 130);
+        //this.drawLink("あああああ", "assets/yari.png", [a1, a2], [a3, a4])
+        //this.drawPoint("あああああ", "assets/point.png", a1, a2)
+        //this.drawPoint("あああああ", "assets/point.png", a3, a4)
         for (let j = 0; j < this.linkPlots.length - 1; j++) {
             let [name, type_posList] = this.linkPlots[j]
             let [type, posList] = type_posList
@@ -345,10 +349,12 @@ void main() {
                 [ex, ey] = this.convert(ex, ey);
 
                 if (j < 10) {
-                    this.drawPoint(String(j)+type+name, "assets/point.png", sx, sy)
+                    this.drawPoint(Utils.rnd(String(j)+type+name), "assets/point.png", sx, sy)
                 }
 
-                this.drawLink(type+name, "assets/yari.png", [sx, sy], [ex, ey])
+                let r = Utils.rnd(type+name);
+                let l = conv_table[type] || conv_table["otherwise"];
+                this.drawLink(r, l[Math.floor(r()*l.length)], [sx, sy], [ex, ey])
             }
         }
     }

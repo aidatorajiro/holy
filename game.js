@@ -20,9 +20,9 @@ class Game {
         // construct objects
         Globals.event = new EventManagement()
         Globals.hito = new Movement()
-        Globals.coordinator = new Coordinator()
         Globals.raw = new Raw()
         Globals.background = new Background()
+        Globals.coordinator = new Coordinator()
 
         // prepare kuromoji
         /*kuromoji.builder({
@@ -31,11 +31,6 @@ class Game {
             if(err) { throw err; }
             Globals.tokenizer = tokenizer
         });*/
-
-        // sample building
-        Globals.raw.event.addListener("load", (raw) => {
-            Globals.sample_building = new Building(raw.json[0], 0, 0, 44)
-        });
 
         // first frame: call animate func
         requestAnimationFrame((time) => {

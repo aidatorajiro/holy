@@ -17,7 +17,7 @@ class Background {
         let beta_1 = this.beta_1;
         let beta_2 = this.beta_2;
         
-        var map = new THREE.TextureLoader().load( "assets/4.png", (tex) => {
+        new THREE.TextureLoader().load( "assets/4.png", (tex) => {
             this.width = tex.image.width;
             this.height = tex.image.height;
             let geometry = new THREE.PlaneGeometry(Globals.width, Globals.height, 1, 1);
@@ -63,9 +63,11 @@ void main() {
         } );
 
         Globals.event.addListener("animate", () => {
-            this.updateParams(this.mesh.material.uniforms)
-            this.mesh.position.x = Globals.camera.position.x
-            this.mesh.position.y = Globals.camera.position.y
+            if (this.mesh !== undefined) {
+                this.updateParams(this.mesh.material.uniforms)
+                this.mesh.position.x = Globals.camera.position.x
+                this.mesh.position.y = Globals.camera.position.y
+            }
         })
     }
 }

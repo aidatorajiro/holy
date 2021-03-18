@@ -37,6 +37,7 @@ function createWindow () {
     globalShortcut.register('Alt+CmdOrCtrl+I', function () {
       win.webContents.openDevTools()
     });
+    win.webContents.openDevTools()
   }
 
   win.loadFile('index.html')

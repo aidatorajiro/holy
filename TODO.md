@@ -9,8 +9,8 @@ movementはカクカクした離散的な動きがいい？
   - 時間が余ったら (..........) parse elements listed in nonempty_set_child.txt
 
 - character
-  - (com.......) movement hardware
-  - (..........) movement program
+  - (complete..) movement hardware
+  - (completed.) movement program
   - (..........) 象徴之璽
   - (comple....) ＧＯＤ璽
 
@@ -22,16 +22,19 @@ movementはカクカクした離散的な動きがいい？
   - (..........) character <-> building interaction
 
 - building
+  - (..........) 括弧処理
   - (completed!) draw text
   - (completed!) construct point plot data
-  - (comp......) construct link plot data
-  - (..........) draw point plots (e.g. #s1# #p#)
-  - (..........) draw link plots (links between words which have been used more than once)
-  - (..........) "change" (組版処理)
+  - (completed!) construct link plot data
+  - (comp......) draw point plots (e.g. #s1# #p#)
+  - (completed.) draw link plots (links between words which have been used more than once)
+  - 時間が余ったら 組版処理(change)
+
+- subbuilding
   - (..........) 象徴之璽
   - (comple....) ＧＯＤ璽
   - 時間が余ったら 隠しtips
 
 - emoji
   - (..........) latex emoji generation
-  - (..........) glsl shader
+  - (..........) shader
