@@ -9,6 +9,7 @@ movementはカクカクした離散的な動きがいい？
   - 時間が余ったら (..........) parse elements listed in nonempty_set_child.txt
 
 - character
+  - "顔文字"が文章の一部をDNAのような感じで複写して、その複写したもの(RNA)をベースに"顔文字"(タンパク質)が作られる。文章の列がランダムシードとなって"顔文字"のパラメータを決定する。
   - (complete..) movement hardware
   - (completed.) movement program
   - (..........) 象徴之璽

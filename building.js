@@ -71,7 +71,7 @@ class Building {
                 for (let r of regeps) {
                     let matches = [...segment.matchAll(r[0])]
                     for (let m of matches) {
-                        this.pointPlots.push([m[0], segments.length, m.index])
+                        this.pointPlots.push([m[0], m.index, segments.length])
                     }
                 }
                 for (let r of regeps) {
@@ -164,6 +164,25 @@ class Building {
     }
 
     drawPointPlots () {
+        for (let [t, x, y] of this.pointPlots) {
+            let r = Utils.rnd(t+x+","+y)
+            let [cx, cy] = this.convert(x, y);
+            console.log(t, cx, cy)
+            if (t === '#p#') {
+                this.drawPoint(r, "assets/conv/p1.png", cx, cy)
+            }
+            if (t === '#i#') {
+                this.drawPoint(r, "assets/conv/p3.png", cx, cy)
+            }
+            if (t === '#a#') {
+                this.drawPoint(r, "assets/conv/p5.png", cx, cy)
+            }
+            let m = t.match('#s(\d+)#')
+            if (m) {
+                let n = parseInt(m[1])
+                this.drawPoint(r, "assets/conv/p2." + n + ".png", cx, cy)
+            }
+        }
     }
 
     async prepareLinkPlots () {
