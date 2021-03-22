@@ -7,23 +7,39 @@ class Background {
         uniforms.pos.value.y = Globals.camera.position.y*common
     }
     constructor () {
-        this.coeff = 200; // param
-        this.alpha = 2.2;
-        this.beta_1 = 5723.9;
-        this.beta_2 = 25925.9;
+        let bg_list = [
+            [
+                "assets/4.png",
+                200,
+                2.2,
+                5723.9,
+                25925.9
+            ],
+            [
+                "assets/3.png",
+                200,
+                7.5,
+                6000,
+                56000
+            ]
+        ]
 
-        let coeff = this.coeff;
-        let alpha = this.alpha;
-        let beta_1 = this.beta_1;
-        let beta_2 = this.beta_2;
+        //let bg_params = bg_list[Math.floor(Math.random()*bg_list.length)];
+        let bg_params = bg_list[1];
+        let [bg_path, coeff, alpha, beta_1, beta_2] = bg_params;
+        this.coeff = coeff;
+        this.alpha = alpha;
+        this.beta_1 = beta_1;
+        this.beta_2 = beta_2;
         
-        new THREE.TextureLoader().load( "assets/4.png", (tex) => {
+        new THREE.TextureLoader().load( bg_path, (tex) => {
             this.width = tex.image.width;
             this.height = tex.image.height;
+
             let geometry = new THREE.PlaneGeometry(Globals.width, Globals.height, 1, 1);
             let uniforms = {
                 texture: { value: tex },
-                far: { value: new THREE.Vector2(this.width*alpha, this.height*alpha) },
+                far: { value: new THREE.Vector2(this.width * alpha, this.height * alpha) },
                 dotvec: { value: new THREE.Vector2(beta_1*coeff, beta_2*coeff) },
                 scale: {value: new THREE.Vector2()},
                 pos: {value: new THREE.Vector2()}
