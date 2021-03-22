@@ -123,7 +123,7 @@ class Building {
         let mesh = new THREE.Mesh(geometry, material);
         Globals.scene.add(mesh);
 
-        mesh.position.z = 1
+        mesh.position.z = 10
         mesh.position.x = this.x
         mesh.position.y = this.y
 
@@ -139,16 +139,26 @@ class Building {
         return [xc, yc];
     }
 
-    drawPoint (r, asset, x, y) {
+    drawPoint (r, asset, x, y, base_scale = 1) {
         new THREE.TextureLoader().load( asset, (texture) => {
 
             let geometry = new THREE.PlaneGeometry(texture.image.width, texture.image.height, 1, 1);
             let material = new THREE.RawShaderMaterial({
                 uniforms: {
-                    texture: { value: texture }
+                    texture: { value: texture },
+                    color: { value: new THREE.Vector4(r(), r(), r(), r()) }
                 },
                 vertexShader: Shaders.defaultVertexShader,
-                fragmentShader: Shaders.defaultFragmentShader,
+                fragmentShader: `
+precision mediump float;
+uniform sampler2D texture;
+uniform vec4 color;
+varying vec2 vUv;
+void main() {
+    gl_FragColor = texture2D(texture, vUv);
+    gl_FragColor *= color;
+}
+`,
                 transparent: true,
             });
 
@@ -158,6 +168,9 @@ class Building {
             mesh.position.x = x
             mesh.position.y = y
             mesh.position.z = 2
+            mesh.scale.x = base_scale * (1 + r()*0.1)
+            mesh.scale.y = base_scale * (1 + r()*0.1)
+            mesh.rotation.z = r() * 0.3
 
             this.pointMeshes.push(mesh)
         });
@@ -167,20 +180,19 @@ class Building {
         for (let [t, x, y] of this.pointPlots) {
             let r = Utils.rnd(t+x+","+y)
             let [cx, cy] = this.convert(x, y);
-            console.log(t, cx, cy)
             if (t === '#p#') {
-                this.drawPoint(r, "assets/conv/p1.png", cx, cy)
+                this.drawPoint(r, "assets/conv/p1.png", cx, cy, 0.4)
             }
             if (t === '#i#') {
-                this.drawPoint(r, "assets/conv/p3.png", cx, cy)
+                this.drawPoint(r, "assets/conv/p3.png", cx, cy, 0.4)
             }
             if (t === '#a#') {
-                this.drawPoint(r, "assets/conv/p5.png", cx, cy)
+                this.drawPoint(r, "assets/conv/p5.png", cx, cy, 0.4)
             }
             let m = t.match('#s(\d+)#')
             if (m) {
                 let n = parseInt(m[1])
-                this.drawPoint(r, "assets/conv/p2." + n + ".png", cx, cy)
+                this.drawPoint(r, "assets/conv/p2." + n + ".png", cx, cy, 0.4)
             }
         }
     }
