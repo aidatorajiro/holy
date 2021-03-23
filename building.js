@@ -21,8 +21,8 @@ class Building {
         this.trayToPos = {};
 
         // points
+        this.pointMeshes = [];
         this.pointPlots = [];
-        this.pointMeshes = []
 
         // function
         this.write(text);
@@ -31,6 +31,14 @@ class Building {
             await this.prepareLinkPlots();
             this.drawLinkPlots();
         })();
+    }
+
+    move (x, y) {
+        [...this.linkMeshes, ...this.pointMeshes, this.textMesh].map(
+            (o) => {o.translateX(x); o.translateY(y);}
+        );
+        this.x += x;
+        this.y += y;
     }
 
     write (text) {
@@ -132,10 +140,10 @@ class Building {
 
     // convert character position to scene position
     convert (x, y) {
-        let ox = this.x + this.offset - this.width/2;
-        let oy = this.y - this.offset + this.height/2;
+        let ox = this.offset - this.width/2;
+        let oy = this.offset + this.height/2;
         let xc = ox + x*this.charWidth
-        let yc = oy - y*this.charHeight
+        let yc = oy - (y + 1)*this.charHeight
         return [xc, yc];
     }
 
@@ -165,8 +173,8 @@ void main() {
             let mesh = new THREE.Mesh(geometry, material);
             Globals.scene.add(mesh);
 
-            mesh.position.x = x
-            mesh.position.y = y
+            mesh.position.x = this.x + x
+            mesh.position.y = this.y + y
             mesh.position.z = 2
             mesh.scale.x = base_scale * (1 + r()*0.1)
             mesh.scale.y = base_scale * (1 + r()*0.1)
@@ -347,8 +355,8 @@ void main() {
             let mesh = new THREE.Mesh(geometry, material);
             Globals.scene.add(mesh);
 
-            mesh.position.x = (start[0] + end[0])/2
-            mesh.position.y = (start[1] + end[1])/2
+            mesh.position.x = this.x + (start[0] + end[0])/2
+            mesh.position.y = this.y + (start[1] + end[1])/2
             mesh.rotation.z = Math.atan2(end[1] - start[1], end[0] - start[0])
             mesh.position.z = 2
 
