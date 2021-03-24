@@ -43,7 +43,7 @@ class Building {
             (o) => {o.translateX(x); o.translateY(y);}
         );
         this.dynvases.map(
-            (o) => {o.move(x, y); o.args.current_y += y;}
+            (o) => {o.move(x, y);}
         );
         this.x += x;
         this.y += y;
@@ -122,13 +122,17 @@ class Building {
 
             const height = height_from(slice.length);
 
-            let dynvas = new Dynamic(this.x, this.y, width, height);
-
-            dynvas.args.current_y = current_y;
+            let dynvas = new Dynamic(this.x, current_y - height / 2, width, height);
 
             dynvas.event.addListener("create", (ev) => {
+                console.log("canvas created at " + ev.box.min.x + ", " + ev.box.min.y + ", " + ev.box.max.x + ", " + ev.box.max.y)
+
                 let canvas = document.createElement("canvas");
                 let ctx = canvas.getContext('2d');
+
+                canvas.width = width;
+
+                canvas.height = height;
 
                 for (let i = 0; i < slice.length; i++) {
                     let segment = slice[i]
@@ -159,16 +163,20 @@ class Building {
                 let mesh = new THREE.Mesh(geometry, material);
                 Globals.scene.add(mesh);
 
+                let xyvec = new THREE.Vector2();
+
+                ev.box.getCenter(xyvec);
+
                 mesh.position.z = 10
-                mesh.position.x = this.x
-                mesh.position.y = ev.args.current_y - height / 2
+                mesh.position.x = xyvec.x
+                mesh.position.y = xyvec.y
 
                 this.textMeshes.push(mesh)
             });
 
             this.dynvases.push(dynvas);
 
-            current_y -= height + offset*2;
+            current_y -= height - offset*2;
         }
     }
 
@@ -336,7 +344,6 @@ void main() {
                 x -= this.segments[y].length
                 y += 1
                 if (this.segments[y] === undefined) {
-                    console.log("warning: y overflowed before EOS", this)
                     break
                 }
             }
@@ -418,17 +425,16 @@ void main() {
                 let [sx, sy] = posList[i];
                 let [ex, ey] = posList[i + 1];
 
-                [sx, sy] = this.convert(sx, sy);
-                [ex, ey] = this.convert(ex, ey);
+                let [csx, csy] = this.convert(sx, sy);
+                let [cex, cey] = this.convert(ex, ey);
 
-                if (j < 10) {
-                    this.drawPoint(Utils.rnd(String(j)+type+name), "assets/point.png", sx, sy)
-                }
+                let dist = Math.sqrt((sx - ex)*(sx - ex) + (sy - ey)*(sy - ey));
 
-                let r = Utils.rnd(type+name);
-                let l = conv_table[type] || conv_table["otherwise"];
-                if (Debug.no_draw_link === false) {
-                    this.drawLink(r, l[Math.floor(r()*l.length)], [sx, sy], [ex, ey])
+                if (j < 100 && dist < 1000) {
+                    this.drawPoint(Utils.rnd(String(j)+type+name), "assets/point.png", csx, csy)
+                    let r = Utils.rnd(type+name);
+                    let l = conv_table[type] || conv_table["otherwise"];
+                    this.drawLink(r, l[Math.floor(r()*l.length)], [csx, csy], [cex, cey])
                 }
             }
         }

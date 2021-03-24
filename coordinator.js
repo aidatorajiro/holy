@@ -11,8 +11,8 @@ class Coordinator {
             let offset = 10*fs;
             let canvas_lines = 100;
 
-            let center_x = 100;
-            let center_y = 100;
+            let center_x = 0;
+            let center_y = 0;
             let rnd = Utils.rnd(String(Math.random())); // TODO fix this
 
             if (Debug.force_batch !== undefined) {
@@ -25,7 +25,6 @@ class Coordinator {
             let size_list = [];
             for (let d of this.data) {
                 let line_char = Math.min(Math.sqrt(d.length), line_char_max)
-                console.log(line_char)
                 let building = new Building(d, center_x, center_y, line_char, fs, fs, fs, fs/2, canvas_lines)
                 this.buildings.push(building)
                 size_list.push([d.length, building.width, building.height, building])

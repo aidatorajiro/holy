@@ -3,6 +3,9 @@
 movementはカクカクした離散的な動きがいい？
 じゃあcharacterはなし？うーん...
 
+- movement
+  - deltaを使って、処理か重かったら何かして誤魔化す
+
 - xml_to_json
   - (completed!) parse texts mostly
   - 時間が余ったら (..........) parse figure
