@@ -1,10 +1,10 @@
 class Building {
-    constructor (text, x, y, len=44, fontSize=32, charHeight=32, charWidth=32, offset=15, canvas_lines=1000) {
+    constructor (text, x, y, lineCharLimit=44, fontSize=32, charHeight=32, charWidth=32, offset=15, canvas_lines=2000) {
         // texts
         this.canvas_lines = canvas_lines
         this.width = undefined
         this.height = undefined
-        this.len = len
+        this.lineCharLimit = lineCharLimit
         this.x = x
         this.y = y
         this.textMeshes = [];
@@ -44,7 +44,7 @@ class Building {
     }
 
     processText (text) {
-        let len = this.len
+        let len = this.lineCharLimit
 
         let lines = text.split("\n")
 
@@ -89,28 +89,37 @@ class Building {
     }
 
     drawText () {
-        let fontSize = this.fontSize
-        let charHeight = this.charHeight
-        let charWidth = this.charWidth
-        let offset = this.offset
-        let len = this.len
-        let segments = this.segments
+        const fontSize = this.fontSize
+        const charHeight = this.charHeight
+        const charWidth = this.charWidth
+        const offset = this.offset
+        const segments = this.segments
 
         // 44 characters (wrap length), 1408 pixels
         const font = fontSize + "px NotoSans";
 
+        const height_from = (l) => {
+            return l * charHeight + offset*2;
+        }
+
+        const whole_height = height_from(segments.length);
+        const width = charWidth * this.lineCharLimit + offset*2;
+
+        this.width = width;
+        this.height = whole_height;
+
+        const start_y = this.y + whole_height / 2;
+        let current_y = start_y;
+        
         for (let j = 0; j < segments.length; j += this.canvas_lines) {
             let slice = segments.slice(j, j + this.canvas_lines)
 
             let canvas = document.createElement('canvas');
             let ctx = canvas.getContext('2d');
-    
-            const width = charWidth*len + offset*2;
-            const height = slice.length*charHeight + offset*2;
+
+            const height = height_from(slice.length);
             canvas.width = width;
             canvas.height = height;
-            this.width = width;
-            this.height = height;
 
             for (let i = 0; i < slice.length; i++) {
                 let segment = slice[i]
@@ -143,9 +152,11 @@ class Building {
 
             mesh.position.z = 10
             mesh.position.x = this.x
-            mesh.position.y = this.y
+            mesh.position.y = current_y - height / 2
 
             this.textMeshes.push(mesh)
+
+            current_y -= height + offset*2
         }
     }
 
@@ -404,7 +415,9 @@ void main() {
 
                 let r = Utils.rnd(type+name);
                 let l = conv_table[type] || conv_table["otherwise"];
-                this.drawLink(r, l[Math.floor(r()*l.length)], [sx, sy], [ex, ey])
+                if (!Debug.no_draw_link) {
+                    this.drawLink(r, l[Math.floor(r()*l.length)], [sx, sy], [ex, ey])
+                }
             }
         }
     }

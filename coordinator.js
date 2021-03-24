@@ -14,9 +14,13 @@ class Coordinator {
 
             let center_x = 100;
             let center_y = 100;
-            let rnd = Utils.rnd(String(Math.random()));
+            let rnd = Utils.rnd(String(Math.random())); // TODO fix this
 
-            this.current_batch = Math.floor(rnd() * len);
+            if (Debug.force_batch !== undefined) {
+                this.current_batch = Debug.force_batch;
+            } else {
+                this.current_batch = Math.floor(rnd() * len);
+            }
             this.data = await Globals.raw.getBatch(this.current_batch);
 
             let size_list = [];
@@ -29,38 +33,22 @@ class Coordinator {
             }
             size_list = size_list.sort((x, y) => y[0] - x[0]);
 
-            let makeBox = (x, y, w, h) => {
-                console.log(x, y, w, h)
-                return new THREE.Box2(new THREE.Vector2(x - w/2, y - h/2), new THREE.Vector2(x + w/2, y + h/2));
-            }
-
-            let addBox = (b) => {
-                this.building_layout.push(b)
-                if (this.bound === undefined) {
-                    this.bound = b
-                } else {
-                    this.bound = this.bound.union(b)
-                }
-            }
+            let x_l;
+            let x_r;
 
             for (let i = 0; i < size_list.length; i++) {
                 let [_, w, h, building] = size_list[i]
                 if (i === 0) {
-                    addBox(makeBox(center_x, center_y, w, h))
+                    x_l = -w/2 - offset
+                    x_r = w/2 + offset
                 } else {
-                    let y = rnd() * (this.bound.max.y - this.bound.min.y) + this.bound.min.y
-                    let bigbox = makeBox(0, y, Infinity, h)
-                    let localbound = this.building_layout.filter(b => b.intersectsBox(bigbox)).reduce((x, y) => (x.union(y)));
-                    let box;
                     if (rnd() < 0.5) {
-                        box = makeBox(localbound.min.x - w/2 - offset, y, w, h)
+                        building.move(x_l - w/2, 0)
+                        x_l -= w + offset
                     } else {
-                        box = makeBox(localbound.max.x + w/2 + offset, y, w, h)
+                        building.move(x_r + w/2, 0)
+                        x_r += w + offset
                     }
-                    addBox(box)
-                    let c = new THREE.Vector2()
-                    box.getCenter(c)
-                    building.move(c.x - center_x, c.y - center_y)
                 }
             }
         });
