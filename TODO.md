@@ -21,8 +21,8 @@ movementはカクカクした離散的な動きがいい？
   - (..........) character <-> building interaction
 
 - building
-  - (..........) 括弧処理
-  - 密度をメーターで測って抑制フィードバック
+  - (..........) 括弧グラフィック・処理
+  - (..........) textがひょうじされないバグ修正（表示物を減らせば直る？？local密度を測って抑制フィードバック？？）
   - (completed!) draw text
   - (completed!) construct point plot data
   - (completed!) construct link plot data

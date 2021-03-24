@@ -1,12 +1,13 @@
 class Building {
-    constructor (text, x, y, len=44, fontSize=32, charHeight=32, charWidth=32, offset=15) {
+    constructor (text, x, y, len=44, fontSize=32, charHeight=32, charWidth=32, offset=15, canvas_lines=1000) {
         // texts
+        this.canvas_lines = canvas_lines
         this.width = undefined
         this.height = undefined
         this.len = len
         this.x = x
         this.y = y
-        this.textMesh = undefined;
+        this.textMeshes = [];
         this.segments = [];
         this.fontSize = fontSize;
         this.charHeight = charHeight;
@@ -25,7 +26,8 @@ class Building {
         this.pointPlots = [];
 
         // function
-        this.write(text);
+        this.processText(text);
+        this.drawText();
         this.drawPointPlots();
         (async () => {
             await this.prepareLinkPlots();
@@ -34,27 +36,17 @@ class Building {
     }
 
     move (x, y) {
-        [...this.linkMeshes, ...this.pointMeshes, this.textMesh].map(
+        [...this.linkMeshes, ...this.pointMeshes, ...this.textMeshes].map(
             (o) => {o.translateX(x); o.translateY(y);}
         );
         this.x += x;
         this.y += y;
     }
 
-    write (text) {
-        let fontSize = this.fontSize
-        let charHeight = this.charHeight
-        let charWidth = this.charWidth
-        let offset = this.offset
-
+    processText (text) {
         let len = this.len
+
         let lines = text.split("\n")
-
-        let canvas = document.createElement('canvas');
-        let ctx = canvas.getContext('2d');
-
-        // 44 characters (wrap length), 1408 pixels
-        const font = fontSize + "px NotoSans";
 
         function change (x, y, n) {
             if (n > 0) {
@@ -94,48 +86,67 @@ class Building {
         for (let r of regeps) {
             this.processedText = this.processedText.replace(r[0], r[1])
         }
+    }
 
-        const width = charWidth*len + offset*2;
-        const height = segments.length*charHeight + offset*2;
-        canvas.width = width;
-        canvas.height = height;
-        this.width = width;
-        this.height = height;
+    drawText () {
+        let fontSize = this.fontSize
+        let charHeight = this.charHeight
+        let charWidth = this.charWidth
+        let offset = this.offset
+        let len = this.len
+        let segments = this.segments
 
-        for (let i = 0; i < segments.length; i++) {
-            let segment = segments[i]
-            ctx.font = font;
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'hanging';
-            ctx.fillStyle = 'rgba(255, 255, 255, 1.0)';
-            ctx.fillText(segment, offset, offset + i*charHeight);
+        // 44 characters (wrap length), 1408 pixels
+        const font = fontSize + "px NotoSans";
+
+        for (let j = 0; j < segments.length; j += this.canvas_lines) {
+            let slice = segments.slice(j, j + this.canvas_lines)
+
+            let canvas = document.createElement('canvas');
+            let ctx = canvas.getContext('2d');
+    
+            const width = charWidth*len + offset*2;
+            const height = slice.length*charHeight + offset*2;
+            canvas.width = width;
+            canvas.height = height;
+            this.width = width;
+            this.height = height;
+
+            for (let i = 0; i < slice.length; i++) {
+                let segment = slice[i]
+                ctx.font = font;
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'hanging';
+                ctx.fillStyle = 'rgba(255, 255, 255, 1.0)';
+                ctx.fillText(segment, offset, offset + i*charHeight);
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = false;
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.format = THREE.RGBAFormat;
+
+            // TODO: dealloc canvas
+            let geometry = new THREE.PlaneGeometry(width, height, 1, 1);
+            let material = new THREE.RawShaderMaterial({
+                uniforms: {
+                  texture: { value: texture }
+                },
+                vertexShader: Shaders.defaultVertexShader,
+                fragmentShader: Shaders.defaultFragmentShader,
+                transparent: true,
+            });
+
+            let mesh = new THREE.Mesh(geometry, material);
+            Globals.scene.add(mesh);
+
+            mesh.position.z = 10
+            mesh.position.x = this.x
+            mesh.position.y = this.y
+
+            this.textMeshes.push(mesh)
         }
-
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.needsUpdate = false;
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
-        texture.format = THREE.RGBAFormat;
-
-        // TODO: dealloc canvas
-        let geometry = new THREE.PlaneGeometry(width, height, 1, 1);
-        let material = new THREE.RawShaderMaterial({
-            uniforms: {
-              texture: { value: texture }
-            },
-            vertexShader: Shaders.defaultVertexShader,
-            fragmentShader: Shaders.defaultFragmentShader,
-            transparent: true,
-        });
-
-        let mesh = new THREE.Mesh(geometry, material);
-        Globals.scene.add(mesh);
-
-        mesh.position.z = 10
-        mesh.position.x = this.x
-        mesh.position.y = this.y
-
-        this.textMesh = mesh
     }
 
     // convert character position to scene position
