@@ -2,8 +2,6 @@ class Coordinator {
     constructor () {
         this.current_batch = undefined
         this.buildings = []
-        this.building_layout = []
-        this.bound = undefined
         this.makeBuildings()
     }
     makeBuildings () {
@@ -11,6 +9,7 @@ class Coordinator {
             let line_char_max = 108;
             let fs = 32;
             let offset = 10*fs;
+            let canvas_lines = 100;
 
             let center_x = 100;
             let center_y = 100;
@@ -27,7 +26,7 @@ class Coordinator {
             for (let d of this.data) {
                 let line_char = Math.min(Math.sqrt(d.length), line_char_max)
                 console.log(line_char)
-                let building = new Building(d, center_x, center_y, line_char, fs, fs, fs, fs/2)
+                let building = new Building(d, center_x, center_y, line_char, fs, fs, fs, fs/2, canvas_lines)
                 this.buildings.push(building)
                 size_list.push([d.length, building.width, building.height, building])
             }

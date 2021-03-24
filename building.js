@@ -1,5 +1,5 @@
 class Building {
-    constructor (text, x, y, lineCharLimit=44, fontSize=32, charHeight=32, charWidth=32, offset=15, canvas_lines=2000) {
+    constructor (text, x, y, lineCharLimit=44, fontSize=32, charHeight=32, charWidth=32, offset=15, canvas_lines=100) {
         // texts
         this.canvas_lines = canvas_lines
         this.width = undefined
@@ -15,6 +15,9 @@ class Building {
         this.offset = offset;
         this.newlines = new Set();
         this.processedText = undefined;
+
+        // Dynvas
+        this.dynvases = [];
 
         // Trays
         this.linkMeshes = [];
@@ -38,6 +41,9 @@ class Building {
     move (x, y) {
         [...this.linkMeshes, ...this.pointMeshes, ...this.textMeshes].map(
             (o) => {o.translateX(x); o.translateY(y);}
+        );
+        this.dynvases.map(
+            (o) => {o.move(x, y); o.args.current_y += y;}
         );
         this.x += x;
         this.y += y;
@@ -110,53 +116,59 @@ class Building {
 
         const start_y = this.y + whole_height / 2;
         let current_y = start_y;
-        
-        for (let j = 0; j < segments.length; j += this.canvas_lines) {
-            let slice = segments.slice(j, j + this.canvas_lines)
 
-            let canvas = document.createElement('canvas');
-            let ctx = canvas.getContext('2d');
+        for (let j = 0; j < segments.length; j += this.canvas_lines) {
+            let slice = segments.slice(j, j + this.canvas_lines);
 
             const height = height_from(slice.length);
-            canvas.width = width;
-            canvas.height = height;
 
-            for (let i = 0; i < slice.length; i++) {
-                let segment = slice[i]
-                ctx.font = font;
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'hanging';
-                ctx.fillStyle = 'rgba(255, 255, 255, 1.0)';
-                ctx.fillText(segment, offset, offset + i*charHeight);
-            }
+            let dynvas = new Dynamic(this.x, this.y, width, height);
 
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.needsUpdate = false;
-            texture.minFilter = THREE.LinearFilter;
-            texture.magFilter = THREE.LinearFilter;
-            texture.format = THREE.RGBAFormat;
+            dynvas.args.current_y = current_y;
 
-            // TODO: dealloc canvas
-            let geometry = new THREE.PlaneGeometry(width, height, 1, 1);
-            let material = new THREE.RawShaderMaterial({
-                uniforms: {
-                  texture: { value: texture }
-                },
-                vertexShader: Shaders.defaultVertexShader,
-                fragmentShader: Shaders.defaultFragmentShader,
-                transparent: true,
+            dynvas.event.addListener("create", (ev) => {
+                let canvas = document.createElement("canvas");
+                let ctx = canvas.getContext('2d');
+
+                for (let i = 0; i < slice.length; i++) {
+                    let segment = slice[i]
+                    ctx.font = font;
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'hanging';
+                    ctx.fillStyle = 'rgba(255, 255, 255, 1.0)';
+                    ctx.fillText(segment, offset, offset + i*charHeight);
+                }
+
+                const texture = new THREE.CanvasTexture(canvas);
+                texture.needsUpdate = false;
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
+                texture.format = THREE.RGBAFormat;
+
+                // TODO: dealloc canvas
+                let geometry = new THREE.PlaneGeometry(width, height, 1, 1);
+                let material = new THREE.RawShaderMaterial({
+                    uniforms: {
+                      texture: { value: texture }
+                    },
+                    vertexShader: Shaders.defaultVertexShader,
+                    fragmentShader: Shaders.defaultFragmentShader,
+                    transparent: true,
+                });
+
+                let mesh = new THREE.Mesh(geometry, material);
+                Globals.scene.add(mesh);
+
+                mesh.position.z = 10
+                mesh.position.x = this.x
+                mesh.position.y = ev.args.current_y - height / 2
+
+                this.textMeshes.push(mesh)
             });
 
-            let mesh = new THREE.Mesh(geometry, material);
-            Globals.scene.add(mesh);
+            this.dynvases.push(dynvas);
 
-            mesh.position.z = 10
-            mesh.position.x = this.x
-            mesh.position.y = current_y - height / 2
-
-            this.textMeshes.push(mesh)
-
-            current_y -= height + offset*2
+            current_y -= height + offset*2;
         }
     }
 
@@ -405,7 +417,7 @@ void main() {
             for (let i = 0; i < posList.length - 1; i++) {
                 let [sx, sy] = posList[i];
                 let [ex, ey] = posList[i + 1];
-                
+
                 [sx, sy] = this.convert(sx, sy);
                 [ex, ey] = this.convert(ex, ey);
 
@@ -415,7 +427,7 @@ void main() {
 
                 let r = Utils.rnd(type+name);
                 let l = conv_table[type] || conv_table["otherwise"];
-                if (!Debug.no_draw_link) {
+                if (Debug.no_draw_link === false) {
                     this.drawLink(r, l[Math.floor(r()*l.length)], [sx, sy], [ex, ey])
                 }
             }
