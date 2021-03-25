@@ -364,7 +364,7 @@ void main() {
 
     drawLink (r, asset, start, end) {
         new THREE.TextureLoader().load( asset, (texture) => {
-            let d = (x, y) => (Math.sqrt((x-y)*(x-y)))
+            let d = (x, y) => (Math.sqrt(x*x + y*y))
             let width = d(start[0] - end[0], start[1] - end[1])
             let geometry = new THREE.PlaneGeometry(width, texture.image.height, 1, 1);
             let material = new THREE.RawShaderMaterial({
