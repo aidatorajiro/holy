@@ -1,4 +1,3 @@
-// Dynamic Canvas
 class Dynamic {
     constructor (x, y, w, h) {
         this.box = new THREE.Box2(
