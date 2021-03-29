@@ -9,11 +9,18 @@ class Background {
     constructor () {
         let bg_list = [
             [
-                "assets/4.png",
+                "assets/4s.png",
                 200,
                 2.2,
                 5723.9,
                 25925.9
+            ],
+            [
+                "assets/4.png",
+                200,
+                7.5,
+                6000,
+                56700
             ],
             [
                 "assets/3.png",
@@ -21,11 +28,17 @@ class Background {
                 7.5,
                 6000,
                 56700
-            ]
+            ],
+            [
+                "assets/2.png",
+                200,
+                7.5,
+                6000,
+                56700
+            ],
         ]
 
-        //let bg_params = bg_list[Math.floor(Math.random()*bg_list.length)];
-        let bg_params = bg_list[1];
+        let bg_params = bg_list[Math.floor(Math.random()*bg_list.length)];
         let [bg_path, coeff, alpha, beta_1, beta_2] = bg_params;
         this.coeff = coeff;
         this.alpha = alpha;
