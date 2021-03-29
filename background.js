@@ -31,8 +31,17 @@ class Background {
         this.alpha = alpha;
         this.beta_1 = beta_1;
         this.beta_2 = beta_2;
+
+        Globals.event.addListener("animate", () => {
+            if (this.mesh !== undefined) {
+                this.updateParams(this.mesh.material.uniforms)
+                this.mesh.position.x = Globals.camera.position.x
+                this.mesh.position.y = Globals.camera.position.y
+            }
+        });
         
-        new THREE.TextureLoader().load( bg_path, (tex) => {
+        (async () => {
+            let tex = await Globals.textureManagement.getTexture(bg_path)
             this.width = tex.image.width;
             this.height = tex.image.height;
 
@@ -49,41 +58,33 @@ class Background {
                 uniforms: uniforms,
                 vertexShader: Shaders.defaultVertexShader,
                 fragmentShader: `
-precision mediump float;
+    precision mediump float;
 
-uniform sampler2D texture;
-uniform vec2 far;
-uniform vec2 dotvec;
-uniform vec2 scale;
-uniform vec2 pos;
-varying vec2 vUv;
-void main() {
+    uniform sampler2D texture;
+    uniform vec2 far;
+    uniform vec2 dotvec;
+    uniform vec2 scale;
+    uniform vec2 pos;
+    varying vec2 vUv;
+    void main() {
     vec2 vUvS = vUv*scale + (-scale + 1.0)/2.0 + pos;
     float r = sin(dot(vUvS.xy, dotvec));
     vec2 v = fract(vec2(vUvS.x + r/far.x, vUvS.y + r/far.y));
     vec3 color = texture2D(texture, v).rgb*0.8;
     gl_FragColor = vec4(color, 1);
-}
-`,
+    }
+    `,
                 transparent: true,
             });
-    
+
             let mesh = new THREE.Mesh(geometry, material);
             Globals.scene.add(mesh);
-    
+
             mesh.position.z = 0
 
             this.mesh = mesh
             this.mesh.position.x = Globals.camera.position.x
             this.mesh.position.y = Globals.camera.position.y
-        } );
-
-        Globals.event.addListener("animate", () => {
-            if (this.mesh !== undefined) {
-                this.updateParams(this.mesh.material.uniforms)
-                this.mesh.position.x = Globals.camera.position.x
-                this.mesh.position.y = Globals.camera.position.y
-            }
-        })
+        })();
     }
 }

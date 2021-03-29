@@ -189,60 +189,76 @@ class Building {
         return [xc, yc];
     }
 
-    drawPoint (r, asset, x, y, base_scale = 1) {
-        new THREE.TextureLoader().load( asset, (texture) => {
-
-            let geometry = new THREE.PlaneGeometry(texture.image.width, texture.image.height, 1, 1);
-            let material = new THREE.RawShaderMaterial({
-                uniforms: {
-                    texture: { value: texture },
-                    color: { value: new THREE.Vector4(r(), r(), r(), r()) }
-                },
-                vertexShader: Shaders.defaultVertexShader,
-                fragmentShader: `
+    async drawPoint (r, asset, x, y, base_scale = 1, base_offset_x = 0, base_offset_y = 0) {
+        let texture = await Globals.textureManagement.getTexture(asset);
+        let geometry = new THREE.PlaneGeometry(texture.image.width, texture.image.height, 1, 1);
+        let material = new THREE.RawShaderMaterial({
+            uniforms: {
+                texture: { value: texture },
+                color: { value: new THREE.Vector4(r(), r(), r(), r()) }
+            },
+            vertexShader: Shaders.defaultVertexShader,
+            fragmentShader: `
 precision mediump float;
 uniform sampler2D texture;
 uniform vec4 color;
 varying vec2 vUv;
 void main() {
-    gl_FragColor = texture2D(texture, vUv);
-    gl_FragColor *= color;
+gl_FragColor = texture2D(texture, vUv);
+gl_FragColor *= color;
 }
 `,
-                transparent: true,
-            });
-
-            let mesh = new THREE.Mesh(geometry, material);
-            Globals.scene.add(mesh);
-
-            mesh.position.x = this.x + x
-            mesh.position.y = this.y + y
-            mesh.position.z = 2
-            mesh.scale.x = base_scale * (1 + r()*0.1)
-            mesh.scale.y = base_scale * (1 + r()*0.1)
-            mesh.rotation.z = r() * 0.3
-
-            this.pointMeshes.push(mesh)
+            transparent: true,
         });
+
+        let mesh = new THREE.Mesh(geometry, material);
+        Globals.scene.add(mesh);
+
+        mesh.position.x = this.x + x + base_offset_x
+        mesh.position.y = this.y + y + base_offset_y
+        mesh.position.z = 2
+        mesh.scale.x = base_scale * (1 + r()*0.1)
+        mesh.scale.y = base_scale * (1 + r()*0.1)
+        mesh.rotation.z = r() * 0.3
+
+        this.pointMeshes.push(mesh)
     }
 
     drawPointPlots () {
+        function sw(r_c, i) {
+            if (ruby_rs[i] === undefined) {
+                ruby_rs[i] = r_c
+                return r_c
+            } else {
+                let t = ruby_rs[i]
+                ruby_rs[i] = undefined
+                return t
+            }
+        }
+        let ruby_rs = [undefined, undefined];
+        let o = this.fontSize / 2;
         for (let [t, x, y] of this.pointPlots) {
-            let r = Utils.rnd(t+x+","+y)
+            let r = Utils.rnd(t+x+","+y);
             let [cx, cy] = this.convert(x, y);
+            if (t === '%') {
+                this.drawPoint(sw(r, 0), "assets/nn.png", cx, cy, 2, o, -o)
+            }
+            if (t === '$') {
+                this.drawPoint(sw(r, 1), "assets/mm.png", cx, cy, 2, o, -o)
+            }
             if (t === '#p#') {
-                this.drawPoint(r, "assets/conv/p1.png", cx, cy, 0.4)
+                this.drawPoint(r, "assets/conv/p1.png", cx, cy, 0.4, o, -o)
             }
             if (t === '#i#') {
-                this.drawPoint(r, "assets/conv/p3.png", cx, cy, 0.4)
+                this.drawPoint(r, "assets/conv/p3.png", cx, cy, 0.4, o, -o)
             }
             if (t === '#a#') {
-                this.drawPoint(r, "assets/conv/p5.png", cx, cy, 0.4)
+                this.drawPoint(r, "assets/conv/p5.png", cx, cy, 0.4, o, -o)
             }
             let m = t.match('#s(\d+)#')
             if (m) {
                 let n = parseInt(m[1])
-                this.drawPoint(r, "assets/conv/p2." + n + ".png", cx, cy, 0.4)
+                this.drawPoint(r, "assets/conv/p2." + n + ".png", cx, cy, 0.4, o, -o)
             }
         }
     }
@@ -362,19 +378,19 @@ void main() {
         this.linkPlots = linkPlots
     }
 
-    drawLink (r, asset, start, end) {
-        new THREE.TextureLoader().load( asset, (texture) => {
-            let d = (x, y) => (Math.sqrt(x*x + y*y))
-            let width = d(start[0] - end[0], start[1] - end[1])
-            let geometry = new THREE.PlaneGeometry(width, texture.image.height, 1, 1);
-            let material = new THREE.RawShaderMaterial({
-                uniforms: {
-                  texture: { value: texture },
-                  coeff: { value: width / texture.image.width },
-                  color: { value: new THREE.Vector4(r(), r(), r(), 0.4) },
-                  repeat: { value: new THREE.Vector4(r()-0.5, r()-0.5, r()-0.5, r()-0.5) }
-                },
-                vertexShader: Shaders.defaultVertexShader,
+    async drawLink (r, asset, start, end) {
+        let texture = await Globals.textureManagement.getTexture(asset);
+        let d = (x, y) => (Math.sqrt(x*x + y*y))
+        let width = d(start[0] - end[0], start[1] - end[1])
+        let geometry = new THREE.PlaneGeometry(width, texture.image.height, 1, 1);
+        let material = new THREE.RawShaderMaterial({
+            uniforms: {
+                texture: { value: texture },
+                coeff: { value: width / texture.image.width },
+                color: { value: new THREE.Vector4(r(), r(), r(), 0.4) },
+                repeat: { value: new THREE.Vector4(r()-0.5, r()-0.5, r()-0.5, r()-0.5) }
+            },
+            vertexShader: Shaders.defaultVertexShader,
 fragmentShader: `
 precision mediump float;
 uniform sampler2D texture;
@@ -383,26 +399,25 @@ uniform vec4 color;
 uniform float coeff;
 varying vec2 vUv;
 void main() {
-    float x0 = vUv.x*coeff;
-    vec4 n = cos(vec4(x0, x0, x0, x0)*vec4(1.0, 2.0, 3.0, 4.0))*repeat;
-    float x1 = fract(x0 + n.x + n.y +  n.z +  n.w);
-    gl_FragColor = texture2D(texture, vec2(x1, vUv.y));
-    gl_FragColor *= color;
+float x0 = vUv.x*coeff;
+vec4 n = cos(vec4(x0, x0, x0, x0)*vec4(1.0, 2.0, 3.0, 4.0))*repeat;
+float x1 = fract(x0 + n.x + n.y +  n.z +  n.w);
+gl_FragColor = texture2D(texture, vec2(x1, vUv.y));
+gl_FragColor *= color;
 }
 `,
-                transparent: true,
-            });
-
-            let mesh = new THREE.Mesh(geometry, material);
-            Globals.scene.add(mesh);
-
-            mesh.position.x = this.x + (start[0] + end[0])/2
-            mesh.position.y = this.y + (start[1] + end[1])/2
-            mesh.rotation.z = Math.atan2(end[1] - start[1], end[0] - start[0])
-            mesh.position.z = 2
-
-            this.linkMeshes.push(mesh)
+            transparent: true,
         });
+
+        let mesh = new THREE.Mesh(geometry, material);
+        Globals.scene.add(mesh);
+
+        mesh.position.x = this.x + (start[0] + end[0])/2
+        mesh.position.y = this.y + (start[1] + end[1])/2
+        mesh.rotation.z = Math.atan2(end[1] - start[1], end[0] - start[0])
+        mesh.position.z = 2
+
+        this.linkMeshes.push(mesh)
     }
 
     drawLinkPlots () {

@@ -18,6 +18,7 @@ class Game {
         document.body.appendChild(Globals.renderer.domElement)
 
         // construct objects
+        Globals.textureManagement = new TextureManagement()
         Globals.event = new EventManagement()
         Globals.hito = new Movement()
         Globals.raw = new Raw()

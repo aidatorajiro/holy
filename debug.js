@@ -1,5 +1,6 @@
 let Debug = {
-    force_batch: undefined
+    force_batch: undefined,
+    jump_to_nearest_ruby: undefined
 }
 
 /*

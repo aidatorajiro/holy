@@ -6,7 +6,7 @@ class Coordinator {
     }
     makeBuildings () {
         Globals.raw.event.addListener("fetch_len", async (len) => {
-            let line_char_max = 108;
+            //let line_char_max = 108;
             let fs = 32;
             let offset = 10*fs;
             let canvas_lines = 100;
@@ -24,7 +24,8 @@ class Coordinator {
 
             let size_list = [];
             for (let d of this.data) {
-                let line_char = Math.min(Math.sqrt(d.length), line_char_max)
+                //let line_char = Math.min(Math.sqrt(d.length), line_char_max)
+                let line_char = 44 + Math.floor(rnd()*44)
                 let building = new Building(d, center_x, center_y, line_char, fs, fs, fs, fs/2, canvas_lines)
                 this.buildings.push(building)
                 size_list.push([d.length, building.width, building.height, building])
