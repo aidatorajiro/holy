@@ -3,7 +3,7 @@ class TextureManagement {
         this.hashmap = {}
         this.loader = new THREE.TextureLoader()
     }
-    getTexture (url) {
+    get (url) {
         return new Promise((res, rej) => {
             if (url in this.hashmap) {
                 res(this.hashmap[url])

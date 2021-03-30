@@ -190,7 +190,7 @@ class Building {
     }
 
     async drawPoint (r, asset, x, y, base_scale = 1, base_offset_x = 0, base_offset_y = 0) {
-        let texture = await Globals.textureManagement.getTexture(asset);
+        let texture = await Globals.textureManagement.get(asset);
         let geometry = new THREE.PlaneGeometry(texture.image.width, texture.image.height, 1, 1);
         let material = new THREE.RawShaderMaterial({
             uniforms: {
@@ -225,26 +225,25 @@ gl_FragColor *= color;
     }
 
     drawPointPlots () {
-        function sw(r_c, i) {
-            if (ruby_rs[i] === undefined) {
-                ruby_rs[i] = r_c
-                return r_c
-            } else {
-                let t = ruby_rs[i]
-                ruby_rs[i] = undefined
-                return t
-            }
-        }
-        let ruby_rs = [undefined, undefined];
+        let ruby_seeds = {};
         let o = this.fontSize / 2;
         for (let [t, x, y] of this.pointPlots) {
-            let r = Utils.rnd(t+x+","+y);
+            let seed = t+x+","+y;
+            if (t === '%' || t === '$') {
+                if (ruby_seeds[t] === undefined) {
+                    ruby_seeds[t] = seed
+                } else {
+                    seed = ruby_seeds[t]
+                    ruby_seeds[t] = undefined
+                }
+            }
+            let r = Utils.rnd(seed);
             let [cx, cy] = this.convert(x, y);
             if (t === '%') {
-                this.drawPoint(sw(r, 0), "assets/nn.png", cx, cy, 2, o, -o)
+                this.drawPoint(r, "assets/nn.png", cx, cy, 1.5, o, -o)
             }
             if (t === '$') {
-                this.drawPoint(sw(r, 1), "assets/mm.png", cx, cy, 2, o, -o)
+                this.drawPoint(r, "assets/mm.png", cx, cy, 1.5, o, -o)
             }
             if (t === '#p#') {
                 this.drawPoint(r, "assets/conv/p1.png", cx, cy, 0.4, o, -o)
@@ -379,7 +378,7 @@ gl_FragColor *= color;
     }
 
     async drawLink (r, asset, start, end) {
-        let texture = await Globals.textureManagement.getTexture(asset);
+        let texture = await Globals.textureManagement.get(asset);
         let d = (x, y) => (Math.sqrt(x*x + y*y))
         let width = d(start[0] - end[0], start[1] - end[1])
         let geometry = new THREE.PlaneGeometry(width, texture.image.height, 1, 1);

@@ -54,7 +54,7 @@ class Background {
         });
         
         (async () => {
-            let tex = await Globals.textureManagement.getTexture(bg_path)
+            let tex = await Globals.textureManagement.get(bg_path)
             this.width = tex.image.width;
             this.height = tex.image.height;
 
@@ -83,7 +83,7 @@ class Background {
     vec2 vUvS = vUv*scale + (-scale + 1.0)/2.0 + pos;
     float r = sin(dot(vUvS.xy, dotvec));
     vec2 v = fract(vec2(vUvS.x + r/far.x, vUvS.y + r/far.y));
-    vec3 color = texture2D(texture, v).rgb*0.8;
+    vec3 color = texture2D(texture, v).rgb*0.7 + 0.15;
     gl_FragColor = vec4(color, 1);
     }
     `,
