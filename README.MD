@@ -1,18 +1,8 @@
 # let'sふわふわ法律あそび
 
-# build memo
-
-python3 xml_to_json.py  --  yields out.json
-
-python3 cluster.py  --  yields names.json
-
-( python3 small.py )
-
-python3 batches.py  --  yields batches/*.json and batches/len.txt
-
 # Libraries/Softwares licenses
 
-We use the following softwares in the application.
+The following softwares are used in the application.
 
 ## Mecab
 
@@ -170,9 +160,11 @@ THE SOFTWARE.
 
 # Fonts licenses
 
-We use the following fonts in the application.
+The following fonts are used in the application.
 
 ## LICENSE for Noto Sans JP
+
+<https://fonts.google.com/specimen/Noto+Sans+JP>
 
 These fonts are licensed under the Open Font License.
 
@@ -235,3 +227,13 @@ This license becomes null and void if any of the above conditions are not met.
 
 DISCLAIMER
 THE FONT SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM OTHER DEALINGS IN THE FONT SOFTWARE.
+
+# build memo
+
+python3 xml_to_json.py  --  yields out.json
+
+python3 cluster.py  --  yields names.json
+
+( python3 small.py )
+
+python3 batches.py  --  yields batches/*.json and batches/len.txt
