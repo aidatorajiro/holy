@@ -7,7 +7,6 @@ class Building {
         this.lineCharLimit = lineCharLimit
         this.x = x
         this.y = y
-        this.textMeshes = [];
         this.segments = [];
         this.fontSize = fontSize;
         this.charHeight = charHeight;
@@ -38,8 +37,14 @@ class Building {
         })();
     }
 
+    update () {
+        for (let o of this.dynvases) {
+            o.update()
+        }
+    }
+
     move (x, y) {
-        [...this.linkMeshes, ...this.pointMeshes, ...this.textMeshes].map(
+        [...this.linkMeshes, ...this.pointMeshes].map(
             (o) => {o.translateX(x); o.translateY(y);}
         );
         this.dynvases.map(
@@ -47,6 +52,18 @@ class Building {
         );
         this.x += x;
         this.y += y;
+    }
+
+    clear () {
+        [...this.linkMeshes, ...this.pointMeshes].map(
+            (o) => {Globals.scene.remove(o)}
+        );
+        this.dynvases.map(
+            (o) => {o.remove();}
+        );
+        this.linkMeshes = []
+        this.pointMeshes = []
+        this.dynvases = []
     }
 
     processText (text) {
@@ -125,8 +142,6 @@ class Building {
             let dynvas = new Dynamic(this.x, current_y - height / 2, width, height);
 
             dynvas.event.addListener("create", (ev) => {
-                console.log("canvas created at " + ev.box.min.x + ", " + ev.box.min.y + ", " + ev.box.max.x + ", " + ev.box.max.y)
-
                 let canvas = document.createElement("canvas");
                 let ctx = canvas.getContext('2d');
 
@@ -171,8 +186,19 @@ class Building {
                 mesh.position.x = xyvec.x
                 mesh.position.y = xyvec.y
 
-                this.textMeshes.push(mesh)
+                ev.mesh = mesh
             });
+
+            dynvas.event.addListener("move", ([obj, x, y]) => {
+                if (obj.mesh !== undefined) {
+                    obj.mesh.translateX(x)
+                    obj.mesh.translateY(y)
+                }
+            })
+
+            dynvas.event.addListener("remove", (obj) => {
+                Globals.scene.remove(obj.mesh)
+            })
 
             this.dynvases.push(dynvas);
 

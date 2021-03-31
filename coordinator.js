@@ -3,7 +3,7 @@ class Coordinator {
         this.current_batch = undefined
         this.buildings = []
         this.buildings_boxes = []
-        this.buildings_started = false
+        this.buildings_flag = false
         //this.makeBuildings()
         Globals.event.addListener("animate", () => (this.animate.call(this)))
     }
@@ -15,10 +15,17 @@ class Coordinator {
         const gridsize = (base_len * fs);
         const xd = Math.floor(Globals.camera.position.x / gridsize)
         const yd = Math.floor(Globals.camera.position.y / gridsize)
-        if (this.buildings_started === false) {
-            this.buildings_started = true
+        if (this.buildings_flag === false) {
+            this.buildings_flag = true
+            for (let b of this.buildings) {
+                b.clear()
+            }
+            this.buildings = []
             this.makeBuildings(Globals.background.bg_params[0] + xd + "," + yd, fs, base_len, offset, canvas_lines, xd * gridsize, yd * gridsize)
         }
+        for (let b of this.buildings) {
+            b.update()
+        } 
     }
     makeBuildings (seed, fs, base_len, offset, canvas_lines, center_x, center_y) {
         Globals.raw.event.addListener("fetch_len", async (len) => {
