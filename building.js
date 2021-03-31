@@ -254,10 +254,10 @@ gl_FragColor *= color;
             if (t === '#a#') {
                 this.drawPoint(r, "assets/conv/p5.png", cx, cy, 0.4, o, -o)
             }
-            let m = t.match('#s(\d+)#')
+            let m = t.match(/#s(\d+)#/)
             if (m) {
                 let n = parseInt(m[1])
-                this.drawPoint(r, "assets/conv/p2." + n + ".png", cx, cy, 0.4, o, -o)
+                this.drawPoint(r, "assets/conv/p2." + n + ".png", cx, cy, 0.3, o, -o)
             }
         }
     }
