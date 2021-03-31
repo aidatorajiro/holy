@@ -427,12 +427,9 @@ gl_FragColor *= color;
             "動詞": ["assets/conv/y1.png", "assets/conv/y4.png"],
             "otherwise": ["assets/yari.png"]
         }
-        //let [a1, a2] = this.convert(5, 5);
-        //let [a3, a4] = this.convert(7, 130);
-        //this.drawLink("あああああ", "assets/yari.png", [a1, a2], [a3, a4])
-        //this.drawPoint("あああああ", "assets/point.png", a1, a2)
-        //this.drawPoint("あああああ", "assets/point.png", a3, a4)
         for (let j = 0; j < this.linkPlots.length - 1; j++) {
+            if (j > 100) { break; }
+
             let [name, type_posList] = this.linkPlots[j]
             let [type, posList] = type_posList
             for (let i = 0; i < posList.length - 1; i++) {
@@ -444,11 +441,17 @@ gl_FragColor *= color;
 
                 let dist = Math.sqrt((sx - ex)*(sx - ex) + (sy - ey)*(sy - ey));
 
-                if (j < 100 && dist < 1000) {
+                let distlim = 1000
+
+                if (dist <= distlim) {
                     this.drawPoint(Utils.rnd(String(j)+type+name), "assets/point.png", csx, csy)
                     let r = Utils.rnd(type+name);
                     let l = conv_table[type] || conv_table["otherwise"];
                     this.drawLink(r, l[Math.floor(r()*l.length)], [csx, csy], [cex, cey])
+                }
+
+                if (i === posList.length - 2 || dist > distlim) {
+                    this.drawPoint(Utils.rnd(String(j)+type+name), "assets/point.png", cex, cey)
                 }
             }
         }

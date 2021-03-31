@@ -2,18 +2,27 @@ class Coordinator {
     constructor () {
         this.current_batch = undefined
         this.buildings = []
-        this.makeBuildings()
+        this.buildings_boxes = []
+        this.buildings_started = false
+        //this.makeBuildings()
+        Globals.event.addListener("animate", () => (this.animate.call(this)))
     }
-    makeBuildings () {
+    animate () {
+        const fs = 32
+        const base_len = 44
+        const offset = 10*fs;
+        const canvas_lines = 100;
+        const gridsize = (base_len * fs);
+        const xd = Math.floor(Globals.camera.position.x / gridsize)
+        const yd = Math.floor(Globals.camera.position.y / gridsize)
+        if (this.buildings_started === false) {
+            this.buildings_started = true
+            this.makeBuildings(Globals.background.bg_params[0] + xd + "," + yd, fs, base_len, offset, canvas_lines, xd * gridsize, yd * gridsize)
+        }
+    }
+    makeBuildings (seed, fs, base_len, offset, canvas_lines, center_x, center_y) {
         Globals.raw.event.addListener("fetch_len", async (len) => {
-            //let line_char_max = 108;
-            let fs = 32;
-            let offset = 10*fs;
-            let canvas_lines = 100;
-
-            let center_x = 0;
-            let center_y = 0;
-            let rnd = Utils.rnd(String(Math.random())); // TODO fix this
+            let rnd = Utils.rnd(seed); // TODO fix this
 
             if (Debug.force_batch !== undefined) {
                 this.current_batch = Debug.force_batch;
@@ -24,8 +33,7 @@ class Coordinator {
 
             let size_list = [];
             for (let d of this.data) {
-                //let line_char = Math.min(Math.sqrt(d.length), line_char_max)
-                let line_char = 44 + Math.floor(rnd()*44)
+                let line_char = base_len + Math.floor(rnd()*base_len)
                 let building = new Building(d, center_x, center_y, line_char, fs, fs, fs, fs/2, canvas_lines)
                 this.buildings.push(building)
                 size_list.push([d.length, building.width, building.height, building])

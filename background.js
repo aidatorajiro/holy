@@ -38,8 +38,8 @@ class Background {
             ],
         ]
 
-        let bg_params = bg_list[Math.floor(Math.random()*bg_list.length)];
-        let [bg_path, coeff, alpha, beta_1, beta_2] = bg_params;
+        this.bg_params = bg_list[Math.floor(Math.random()*bg_list.length)];
+        let [bg_path, coeff, alpha, beta_1, beta_2] = this.bg_params;
         this.coeff = coeff;
         this.alpha = alpha;
         this.beta_1 = beta_1;
