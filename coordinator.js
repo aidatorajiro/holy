@@ -14,7 +14,7 @@ class Coordinator {
     animate () {
         const fs = 32
         const base_len = 44
-        const offset = 10*fs;
+        const offset = 10 * fs;
         const canvas_lines = 100;
         const gridsize = (base_len * fs);
         const xd = Math.floor(Globals.camera.position.x / gridsize)
