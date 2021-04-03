@@ -164,7 +164,6 @@ class Building {
                 texture.magFilter = THREE.LinearFilter;
                 texture.format = THREE.RGBAFormat;
 
-                // TODO: dealloc canvas
                 let geometry = new THREE.PlaneGeometry(width, height, 1, 1);
                 let material = new THREE.RawShaderMaterial({
                     uniforms: {
@@ -400,6 +399,8 @@ gl_FragColor *= color;
             .filter((x) => (x[0].length > 1 && x[1][1].length > 1))
             .sort((x, y) => (y[1][1].length - x[1][1].length))
 
+        // TODO: somehow randomize link priority (e.g. shuffle this.linkPlots)
+
         this.linkPlots = linkPlots
     }
 
@@ -453,11 +454,15 @@ gl_FragColor *= color;
             "動詞": ["assets/conv/y1.png", "assets/conv/y4.png"],
             "otherwise": ["assets/yari.png"]
         }
-        for (let j = 0; j < this.linkPlots.length - 1; j++) {
-            if (j > 100) { break; }
-
+        let links_remain = Math.floor(this.segments.length * 2.5);
+        
+        for (let j = 0; j < this.linkPlots.length; j++) {
             let [name, type_posList] = this.linkPlots[j]
             let [type, posList] = type_posList
+            links_remain -= posList.length;
+            if (links_remain < 0) {
+                break;
+            }
             for (let i = 0; i < posList.length - 1; i++) {
                 let [sx, sy] = posList[i];
                 let [ex, ey] = posList[i + 1];
