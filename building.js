@@ -216,7 +216,7 @@ class Building {
     }
 
     async drawPoint (r, asset, x, y, base_scale = 1, base_offset_x = 0, base_offset_y = 0) {
-        let texture = await Globals.textureManagement.get(asset);
+        let texture = await Globals.texture.get(asset);
         let geometry = new THREE.PlaneGeometry(texture.image.width, texture.image.height, 1, 1);
         let material = new THREE.RawShaderMaterial({
             uniforms: {
@@ -404,7 +404,7 @@ gl_FragColor *= color;
     }
 
     async drawLink (r, asset, start, end) {
-        let texture = await Globals.textureManagement.get(asset);
+        let texture = await Globals.texture.get(asset);
         let d = (x, y) => (Math.sqrt(x*x + y*y))
         let width = d(start[0] - end[0], start[1] - end[1])
         let geometry = new THREE.PlaneGeometry(width, texture.image.height, 1, 1);

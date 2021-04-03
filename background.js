@@ -54,7 +54,7 @@ class Background {
         });
         
         (async () => {
-            let tex = await Globals.textureManagement.get(bg_path)
+            let tex = await Globals.texture.get(bg_path)
             this.width = tex.image.width;
             this.height = tex.image.height;
 
