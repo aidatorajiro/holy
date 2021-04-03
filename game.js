@@ -36,7 +36,7 @@ class Game {
         // first frame: call animate func
         requestAnimationFrame((time) => {
 
-            let windowEvents = ['resize', 'mousedown', 'mouseup', 'keydown', 'keyup', 'beforeunload']
+            let windowEvents = ['resize', 'mousedown', 'mouseup', 'keydown', 'keyup', 'beforeunload', 'gamepadconnected']
 
             for (let name of windowEvents) {
                 window.addEventListener(name, function (ev) {
