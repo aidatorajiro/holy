@@ -4,8 +4,9 @@ class Coordinator {
         this.buildings = []
         this.buildings_boxes = []
         this.buildings_flag = false
-        Globals.camera.position.x = 10000000*Math.random()
-        Globals.camera.position.y = 10000000*Math.random()
+        let rnd = Utils.rnd("coordinator.js precious seed " + Math.random())
+        Globals.camera.position.x = 10000000*rnd()
+        Globals.camera.position.y = 10000000*rnd()
         Globals.event.addListener("animate", () => (this.animate.call(this)))
         Globals.raw.event.addListener("fetch_len", async (len) => {
             this.num_batches = len

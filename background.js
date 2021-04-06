@@ -38,7 +38,9 @@ class Background {
             ],
         ]
 
-        this.bg_params = bg_list[Math.floor(Math.random()*bg_list.length)];
+        let rnd = Utils.rnd("background.js precious seed " + Math.random())
+
+        this.bg_params = bg_list[Math.floor(rnd()*bg_list.length)];
         let [bg_path, coeff, alpha, beta_1, beta_2] = this.bg_params;
         this.coeff = coeff;
         this.alpha = alpha;

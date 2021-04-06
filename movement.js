@@ -9,7 +9,7 @@ class Movement {
         });
         let a = 40
         let f = (x) => (Math.atan( ( 1 / ( a * 2 / Math.PI ) ) * x ) * a * 2 / Math.PI)
-        let rnd = Utils.rnd("Movement.js precious seed")
+        let rnd = Utils.rnd("movement.js precious seed " + Math.random())
         Globals.event.addListener("animate", (ev) => {
             let d = f(ev.delta)
             let r = rnd()
