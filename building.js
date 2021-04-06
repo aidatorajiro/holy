@@ -173,7 +173,6 @@ class Building {
                     fragmentShader: Shaders.defaultFragmentShader,
                     transparent: true,
                 });
-
                 let mesh = new THREE.Mesh(geometry, material);
                 Globals.scene.add(mesh);
 
@@ -181,7 +180,7 @@ class Building {
 
                 ev.box.getCenter(xyvec);
 
-                mesh.position.z = 10
+                mesh.position.z = 4
                 mesh.position.x = xyvec.x
                 mesh.position.y = xyvec.y
 

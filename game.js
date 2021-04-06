@@ -7,8 +7,8 @@ class Game {
         Globals.height = window.innerHeight;
 
         // camera / scene / renderer preparation
-        Globals.camera = new THREE.OrthographicCamera( -Globals.width / 2, Globals.width / 2, Globals.height / 2, -Globals.height / 2, 1, 2000 );
-        Globals.camera.position.z = 500;
+        Globals.camera = new THREE.OrthographicCamera( -Globals.width / 2, Globals.width / 2, Globals.height / 2, -Globals.height / 2, 1, Globals.width );
+        Globals.camera.position.z = 10;
 
         Globals.scene = new THREE.Scene()
 
