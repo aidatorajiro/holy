@@ -27,6 +27,7 @@ movementはカクカクした離散的な動きがいい？
   - (..........) character <-> building interaction
 
 - building
+  - (..........) fix prepareLinkPlots (fix starting positions)
   - (..........) すべてをdynamicにする。W = width * cos + height * sin, H = width * sin + height * cos
   - (..........) 括弧グラフィック・処理
   - (completed!) textがひょうじされないバグ修正（表示物を減らせば直る？？local密度を測って抑制フィードバック？？）

@@ -9,19 +9,22 @@ class Movement {
         });
         let a = 40
         let f = (x) => (Math.atan( ( 1 / ( a * 2 / Math.PI ) ) * x ) * a * 2 / Math.PI)
+        let rnd = Utils.rnd("Movement.js precious seed")
         Globals.event.addListener("animate", (ev) => {
             let d = f(ev.delta)
+            let r = rnd()
+            let c = 0.5 + (r - 0.5)*0.4
             if (this.pressingkey === 'd') {
-                Globals.camera.position.x += 0.5*d
+                Globals.camera.position.x += d*c
             }
             if (this.pressingkey === 'a') {
-                Globals.camera.position.x -= 0.5*d
+                Globals.camera.position.x -= d*c
             }
             if (this.pressingkey === 'w') {
-                Globals.camera.position.y += 0.5*d
+                Globals.camera.position.y += d*c
             }
             if (this.pressingkey === 's') {
-                Globals.camera.position.y -= 0.5*d
+                Globals.camera.position.y -= d*c
             }
         });
     }

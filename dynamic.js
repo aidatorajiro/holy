@@ -10,14 +10,7 @@ class Dynamic {
         this.lifetime = lifetime
     }
     update () {
-        let camera_x = Globals.camera.position.x;
-        let camera_y = Globals.camera.position.y;
-        let camera_r = Globals.camera.right;
-        let camera_t = Globals.camera.top;
-        let camera_box = new THREE.Box2(
-            new THREE.Vector2(camera_x - camera_r, camera_y - camera_t),
-            new THREE.Vector2(camera_x + camera_r, camera_y + camera_t)
-        )
+        let camera_box = Globals.cameraBox;
         if (camera_box.intersectsBox(this.box)) {
             if (this.created === false) {
                 this.created = true

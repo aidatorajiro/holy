@@ -67,6 +67,15 @@ class Game {
             this.animate(time)
         })
 
+        let camera_x = Globals.camera.position.x;
+        let camera_y = Globals.camera.position.y;
+        let camera_r = Globals.camera.right;
+        let camera_t = Globals.camera.top;
+        Globals.cameraBox = new THREE.Box2(
+            new THREE.Vector2(camera_x - camera_r, camera_y - camera_t),
+            new THREE.Vector2(camera_x + camera_r, camera_y + camera_t)
+        )
+
         if (Globals.time === undefined) {
             Globals.delta = 1000 / 60 // fallback delta value
             Globals.time = time
