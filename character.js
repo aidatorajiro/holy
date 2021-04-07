@@ -16,17 +16,18 @@ class Character {
     animate () {
         const r = this.rnd
         if (this.texture.length === this.num_images) {
-            if (r() < 0.001) {
+            if (r() < 0.01) {
                 let speed_x = r() - 0.5;
                 let speed_y = r() - 0.5;
-                let speed_rot_x = r() - 0.5;
-                let speed_rot_y = r() - 0.5;
-                let speed_rot_z = r() - 0.5;
+                let speed_rot_x = (r() - 0.5)*0.01;
+                let speed_rot_y = (r() - 0.5)*0.01;
+                let speed_rot_z = (r() - 0.5)*0.01;
                 let spawn_side = Math.floor(r() * 2);
-                let geometry = new THREE.PlaneGeometry(width, height, 1, 1);
+                let tex = this.texture[Math.floor(r() * this.num_images)]
+                let geometry = new THREE.PlaneGeometry(tex.image.width, tex.image.height, 1, 1);
                 let material = new THREE.RawShaderMaterial({
                     uniforms: {
-                      texture: { value: texture },
+                      texture: { value: tex },
                       color: { value: new THREE.Vector4(r(), r(), r(), r()) }
                     },
                     vertexShader: Shaders.defaultVertexShader,
@@ -37,7 +38,7 @@ uniform vec4 color;
 varying vec2 vUv;
 void main() {
 vec4 tmp = texture2D(texture, vUv);
-gl_FragColor = vec4(1 - tmp.r, 1 - tmp.g, 1 - tmp.b, tmp.a);
+gl_FragColor = vec4(1.0 - tmp.r, 1.0 - tmp.g, 1.0 - tmp.b, tmp.a);
 gl_FragColor *= color;
 }
 `,
@@ -68,11 +69,11 @@ gl_FragColor *= color;
 
                 this.data.push([speed_x, speed_y, speed_rot_x, speed_rot_y, speed_rot_z, mesh])
             }
-            for (let [speed_x, speed_y, speed_rot_x, speed_rot_y, speed_rot_z, mesh] in this.data) {
+            for (let [speed_x, speed_y, speed_rot_x, speed_rot_y, speed_rot_z, mesh] of this.data) {
                 mesh.position.x += speed_x
                 mesh.position.y += speed_y
-                mesh.rotation.x += speed_rot_x
-                mesh.rotation.y += speed_rot_y
+                //mesh.rotation.x += speed_rot_x
+                //mesh.rotation.y += speed_rot_y
                 mesh.rotation.z += speed_rot_z
             }
         }
