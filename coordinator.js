@@ -68,28 +68,29 @@ class Coordinator {
         let x_r;
 
         for (let i = 0; i < size_list.length; i++) {
-            let [datalen, building] = size_list[i]
-            let w = building.width
-            if (i === 0) {
-                x_l = -w/2 - offset
-                x_r = w/2 + offset
-            } else {
-                let r = rnd()
-                let distance;
-
-                if (r < 0.5) {
-                    distance = x_l - w/2;
-                } else {
-                    distance = x_r + w/2;
-                }
-
+            let draw = () => {
                 building.draw(center_x + distance, center_y)
                 let box = Utils.makeBox(center_x + distance, center_y, building.width, building.height)
                 this.buildings_boxes.push(box)
-                    
+            }
+
+            let [datalen, building] = size_list[i]
+            let w = building.width
+            let distance;
+            if (i === 0) {
+                x_l = -w/2 - offset
+                x_r = w/2 + offset
+                distance = 0
+                draw()
+            } else {
+                let r = rnd()
                 if (r < 0.5) {
+                    distance = x_l - w/2;
+                    draw();
                     x_l -= w + offset
                 } else {
+                    distance = x_r + w/2;
+                    draw();
                     x_r += w + offset
                 }
             }
