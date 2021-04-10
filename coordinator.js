@@ -57,11 +57,10 @@ class Coordinator {
         let size_list = [];
         for (let d of this.data) {
             let line_char = base_len + Math.floor(rnd()*base_len)
-            let building = new Building(d, center_x, center_y, line_char, fs, fs, fs, fs/2, canvas_lines)
+            let building = new Building(d, line_char, fs, fs, fs, fs/2, canvas_lines)
+            building.preprocess()
             this.buildings.push(building)
-            let box = Utils.makeBox(center_x, center_y, building.width, building.height)
-            this.buildings_boxes.push(box)
-            size_list.push([d.length, box, building])
+            size_list.push([d.length, building])
         }
         size_list = size_list.sort((x, y) => y[0] - x[0]);
 
@@ -69,23 +68,28 @@ class Coordinator {
         let x_r;
 
         for (let i = 0; i < size_list.length; i++) {
-            let [_, box, building] = size_list[i]
-            let wh = new THREE.Vector2()
-            box.getSize(wh)
-            let w = wh.x
+            let [datalen, building] = size_list[i]
+            let w = building.width
             if (i === 0) {
                 x_l = -w/2 - offset
                 x_r = w/2 + offset
             } else {
-                if (rnd() < 0.5) {
-                    let distance = x_l - w/2;
-                    building.move(distance, 0)
-                    box.translate(new THREE.Vector2(distance, 0))
+                let r = rnd()
+                let distance;
+
+                if (r < 0.5) {
+                    distance = x_l - w/2;
+                } else {
+                    distance = x_r + w/2;
+                }
+
+                building.draw(center_x + distance, center_y)
+                let box = Utils.makeBox(center_x + distance, center_y, building.width, building.height)
+                this.buildings_boxes.push(box)
+                    
+                if (r < 0.5) {
                     x_l -= w + offset
                 } else {
-                    let distance = x_r + w/2;
-                    building.move(distance, 0)
-                    box.translate(new THREE.Vector2(distance, 0))
                     x_r += w + offset
                 }
             }

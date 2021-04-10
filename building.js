@@ -1,12 +1,10 @@
 class Building {
-    constructor (text, x, y, lineCharLimit=44, fontSize=32, charHeight=32, charWidth=32, offset=15, canvas_lines=100) {
+    constructor (text, lineCharLimit=44, fontSize=32, charHeight=32, charWidth=32, offset=15, canvas_lines=100) {
         // texts
         this.canvas_lines = canvas_lines
         this.width = undefined
         this.height = undefined
         this.lineCharLimit = lineCharLimit
-        this.x = x
-        this.y = y
         this.segments = [];
         this.fontSize = fontSize;
         this.charHeight = charHeight;
@@ -16,7 +14,7 @@ class Building {
         this.processedText = undefined;
 
         // Dynvas
-        this.dynvases = [];
+        this.dynvases = new DynamicCache();
 
         // Trays
         this.linkMeshes = [];
@@ -27,8 +25,18 @@ class Building {
         this.pointMeshes = [];
         this.pointPlots = [];
 
-        // function
-        this.processText(text);
+        // text
+        this.text = text
+    }
+
+    preprocess () {
+        this.processText();
+        this.calculateHeight();
+    }
+
+    draw (x, y) {
+        this.x = x
+        this.y = y
         this.drawText();
         this.drawPointPlots();
         (async () => {
@@ -38,11 +46,10 @@ class Building {
     }
 
     update () {
-        for (let o of this.dynvases) {
-            o.update()
-        }
+        this.dynvases.update()
     }
 
+    /*
     move (x, y) {
         [...this.linkMeshes, ...this.pointMeshes].map(
             (o) => {o.translateX(x); o.translateY(y);}
@@ -52,21 +59,19 @@ class Building {
         );
         this.x += x;
         this.y += y;
-    }
+    }*/
 
     clear () {
         [...this.linkMeshes, ...this.pointMeshes].map(
             (o) => {Globals.scene.remove(o)}
         );
-        this.dynvases.map(
-            (o) => {o.remove();}
-        );
+        this.dynvases.clear()
         this.linkMeshes = []
         this.pointMeshes = []
-        this.dynvases = []
     }
 
-    processText (text) {
+    processText () {
+        let text = this.text;
         let len = this.lineCharLimit
 
         let lines = text.split("\n")
@@ -111,37 +116,41 @@ class Building {
         }
     }
 
-    drawText () {
-        const fontSize = this.fontSize
-        const charHeight = this.charHeight
+    calculateHeight () {
         const charWidth = this.charWidth
-        const offset = this.offset
         const segments = this.segments
-
-        // 44 characters (wrap length), 1408 pixels
-        const font = fontSize + "px NotoSans";
-
-        const height_from = (l) => {
-            return l * charHeight + offset*2;
-        }
-
-        const whole_height = height_from(segments.length);
+        const offset = this.offset
+        const whole_height = this.heightFrom(segments.length);
         const width = charWidth * this.lineCharLimit + offset*2;
-
         this.width = width;
         this.height = whole_height;
+    }
 
-        const start_y = this.y + whole_height / 2;
+    heightFrom (l) {
+        return l * this.charHeight + this.offset*2;
+    }
+
+    drawText () {
+        const segments = this.segments
+        const width = this.width
+        const offset = this.offset
+
+        // 44 characters (wrap length), 1408 pixels
+        const fontSize = this.fontSize
+        const font = fontSize + "px NotoSans";
+
+        const start_y = this.y + this.height / 2;
         let current_y = start_y;
 
         for (let j = 0; j < segments.length; j += this.canvas_lines) {
             let slice = segments.slice(j, j + this.canvas_lines);
 
-            const height = height_from(slice.length);
+            const height = this.heightFrom(slice.length);
 
             let dynvas = new Dynamic(this.x, current_y - height / 2, width, height);
 
             dynvas.event.addListener("create", (ev) => {
+                console.log(ev)
                 let canvas = document.createElement("canvas");
                 let ctx = canvas.getContext('2d');
 
@@ -155,7 +164,7 @@ class Building {
                     ctx.textAlign = 'left';
                     ctx.textBaseline = 'hanging';
                     ctx.fillStyle = 'rgba(255, 255, 255, 1.0)';
-                    ctx.fillText(segment, offset, offset + i*charHeight);
+                    ctx.fillText(segment, offset, offset + i*this.charHeight);
                 }
 
                 const texture = new THREE.CanvasTexture(canvas);
@@ -198,7 +207,7 @@ class Building {
                 Globals.scene.remove(obj.mesh)
             })
 
-            this.dynvases.push(dynvas);
+            this.dynvases.add(dynvas);
 
             current_y -= height - offset*2;
         }
