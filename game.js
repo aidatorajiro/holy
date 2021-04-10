@@ -69,12 +69,9 @@ class Game {
 
         let camera_x = Globals.camera.position.x;
         let camera_y = Globals.camera.position.y;
-        let camera_r = Globals.camera.right;
-        let camera_t = Globals.camera.top;
-        Globals.cameraBox = new THREE.Box2(
-            new THREE.Vector2(camera_x - camera_r, camera_y - camera_t),
-            new THREE.Vector2(camera_x + camera_r, camera_y + camera_t)
-        )
+        let camera_w = Globals.width;
+        let camera_h = Globals.height;
+        Globals.cameraBox = Utils.makeBox(camera_x, camera_y, camera_w, camera_h)
 
         if (Globals.time === undefined) {
             Globals.delta = 1000 / 60 // fallback delta value

@@ -1,4 +1,10 @@
 let Utils = {
+    makeBox: function (x, y, w, h) {
+        return new THREE.Box2(
+            new THREE.Vector2(x - w / 2, y - h / 2),
+            new THREE.Vector2(x + w / 2, y + h / 2)
+        )
+    },
     rnd: function (str) {
         let seed = this.xmur3(str);
         return this.mulberry32(seed())

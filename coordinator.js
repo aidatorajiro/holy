@@ -4,15 +4,16 @@ class Coordinator {
         this.buildings = []
         this.buildings_boxes = []
         this.buildings_flag = false
-        let rnd = Utils.rnd("coordinator.js precious seed " + Math.random())
-        Globals.camera.position.x = 10000000*rnd()
-        Globals.camera.position.y = 10000000*rnd()
+        this.rnd = Utils.rnd("coordinator.js precious seed " + Math.random())
+        Globals.camera.position.x = 10000000*this.rnd()
+        Globals.camera.position.y = 10000000*this.rnd()
         Globals.event.addListener("animate", () => (this.animate.call(this)))
         Globals.raw.event.addListener("fetch_len", async (len) => {
             this.num_batches = len
         });
     }
     animate () {
+        const r = this.rnd
         const fs = 32
         const base_len = 44
         const offset = 10 * fs;
@@ -26,10 +27,21 @@ class Coordinator {
                 b.clear()
             }
             this.buildings = []
+            this.buildings_boxes = []
             this.makeBuildings(Globals.background.bg_params[0] + xd + "," + yd, fs, base_len, offset, canvas_lines, xd * gridsize, yd * gridsize)
         }
         for (let b of this.buildings) {
             b.update()
+        }
+
+        let intersect = false
+        for (let b of this.buildings_boxes) {
+            if (b.intersectsBox(Globals.cameraBox)) {
+                intersect = true
+            }
+        }
+        if (!intersect && this.buildings.length !== 0 && r() < 0.001) {
+            this.buildings_flag = false
         }
     }
     async makeBuildings (seed, fs, base_len, offset, canvas_lines, center_x, center_y) {
@@ -47,7 +59,9 @@ class Coordinator {
             let line_char = base_len + Math.floor(rnd()*base_len)
             let building = new Building(d, center_x, center_y, line_char, fs, fs, fs, fs/2, canvas_lines)
             this.buildings.push(building)
-            size_list.push([d.length, building.width, building.height, building])
+            let box = Utils.makeBox(center_x, center_y, building.width, building.height)
+            this.buildings_boxes.push(box)
+            size_list.push([d.length, box, building])
         }
         size_list = size_list.sort((x, y) => y[0] - x[0]);
 
@@ -55,16 +69,23 @@ class Coordinator {
         let x_r;
 
         for (let i = 0; i < size_list.length; i++) {
-            let [_, w, h, building] = size_list[i]
+            let [_, box, building] = size_list[i]
+            let wh = new THREE.Vector2()
+            box.getSize(wh)
+            let w = wh.x
             if (i === 0) {
                 x_l = -w/2 - offset
                 x_r = w/2 + offset
             } else {
                 if (rnd() < 0.5) {
-                    building.move(x_l - w/2, 0)
+                    let distance = x_l - w/2;
+                    building.move(distance, 0)
+                    box.translate(new THREE.Vector2(distance, 0))
                     x_l -= w + offset
                 } else {
-                    building.move(x_r + w/2, 0)
+                    let distance = x_l - w/2;
+                    building.move(distance, 0)
+                    box.translate(new THREE.Vector2(distance, 0))
                     x_r += w + offset
                 }
             }
