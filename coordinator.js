@@ -83,7 +83,7 @@ class Coordinator {
                     box.translate(new THREE.Vector2(distance, 0))
                     x_l -= w + offset
                 } else {
-                    let distance = x_l - w/2;
+                    let distance = x_r + w/2;
                     building.move(distance, 0)
                     box.translate(new THREE.Vector2(distance, 0))
                     x_r += w + offset
