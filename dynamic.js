@@ -88,9 +88,9 @@ class Dynamic {
         this.event.runEvent("remove", this)
         this.created = false
     }
-    move (x, y) {
+    /*move (x, y) {
         console.log("dynamic moved: " + x + ", " + y)
         this.event.runEvent("move", [this, x, y])
         this.box.translate(new THREE.Vector2(x, y))
-    }
+    }*/
 }

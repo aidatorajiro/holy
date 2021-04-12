@@ -150,7 +150,6 @@ class Building {
             let dynvas = new Dynamic(this.x, current_y - height / 2, width, height);
 
             dynvas.event.addListener("create", (ev) => {
-                console.log(ev)
                 let canvas = document.createElement("canvas");
                 let ctx = canvas.getContext('2d');
 
@@ -196,12 +195,12 @@ class Building {
                 ev.mesh = mesh
             });
 
-            dynvas.event.addListener("move", ([obj, x, y]) => {
+            /*dynvas.event.addListener("move", ([obj, x, y]) => {
                 if (obj.mesh !== undefined) {
                     obj.mesh.translateX(x)
                     obj.mesh.translateY(y)
                 }
-            })
+            })*/
 
             dynvas.event.addListener("remove", (obj) => {
                 Globals.scene.remove(obj.mesh)
@@ -416,15 +415,21 @@ gl_FragColor *= color;
         let texture = await Globals.texture.get(asset);
         let d = (x, y) => (Math.sqrt(x*x + y*y))
         let width = d(start[0] - end[0], start[1] - end[1])
-        let geometry = new THREE.PlaneGeometry(width, texture.image.height, 1, 1);
-        let material = new THREE.RawShaderMaterial({
-            uniforms: {
-                texture: { value: texture },
-                coeff: { value: width / texture.image.width },
-                color: { value: new THREE.Vector4(r(), r(), r(), 0.4) },
-                repeat: { value: new THREE.Vector4(r()-0.5, r()-0.5, r()-0.5, r()-0.5) }
-            },
-            vertexShader: Shaders.defaultVertexShader,
+        let height = texture.image.height;
+        let lx = this.x + (start[0] + end[0])/2;
+        let ly = this.y + (start[1] + end[1])/2;
+        let dynvas = new Dynamic(lx, ly, Math.abs(end[0] - start[0]), Math.abs(end[1] - start[1]));
+        
+        dynvas.event.addListener("create", async (ev) => {
+            let geometry = new THREE.PlaneGeometry(width, height, 1, 1);
+            let material = new THREE.RawShaderMaterial({
+                uniforms: {
+                    texture: { value: texture },
+                    coeff: { value: width / texture.image.width },
+                    color: { value: new THREE.Vector4(r(), r(), r(), 0.4) },
+                    repeat: { value: new THREE.Vector4(r()-0.5, r()-0.5, r()-0.5, r()-0.5) }
+                },
+                vertexShader: Shaders.defaultVertexShader,
 fragmentShader: `
 precision mediump float;
 uniform sampler2D texture;
@@ -440,18 +445,29 @@ gl_FragColor = texture2D(texture, vec2(x1, vUv.y));
 gl_FragColor *= color;
 }
 `,
-            transparent: true,
+                transparent: true,
+            });
+    
+            let mesh = new THREE.Mesh(geometry, material);
+            Globals.scene.add(mesh);
+    
+            mesh.position.x = this.x + (start[0] + end[0])/2
+            mesh.position.y = this.y + (start[1] + end[1])/2
+            mesh.rotation.z = Math.atan2(end[1] - start[1], end[0] - start[0])
+            mesh.position.z = 2
+    
+            ev.mesh = mesh
         });
-
-        let mesh = new THREE.Mesh(geometry, material);
-        Globals.scene.add(mesh);
-
-        mesh.position.x = this.x + (start[0] + end[0])/2
-        mesh.position.y = this.y + (start[1] + end[1])/2
-        mesh.rotation.z = Math.atan2(end[1] - start[1], end[0] - start[0])
-        mesh.position.z = 2
-
-        this.linkMeshes.push(mesh)
+        /*dynvas.event.addListener("move", ([obj, x, y]) => {
+            if (obj.mesh !== undefined) {
+                obj.mesh.translateX(x)
+                obj.mesh.translateY(y)
+            }
+        })*/
+        dynvas.event.addListener("remove", (obj) => {
+            Globals.scene.remove(obj.mesh)
+        })
+        this.dynvases.add(dynvas)
     }
 
     drawLinkPlots () {
@@ -480,7 +496,7 @@ gl_FragColor *= color;
 
                 let dist = Math.sqrt((sx - ex)*(sx - ex) + (sy - ey)*(sy - ey));
 
-                let distlim = 1000
+                let distlim = Infinity
 
                 if (dist <= distlim) {
                     this.drawPoint(Utils.rnd(String(j)+type+name), "assets/point.png", csx, csy)
