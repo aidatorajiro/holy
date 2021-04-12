@@ -1,5 +1,7 @@
 # let'sふわふわ法律あそび
 
+# HOLY: Homologically Optimized Legal Yearner
+
 # Libraries/Softwares licenses
 
 The following softwares are used in the application.
