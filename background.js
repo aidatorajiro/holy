@@ -5,6 +5,8 @@ class Background {
         uniforms.scale.value.y = Globals.height*common
         uniforms.pos.value.x = Globals.camera.position.x*common
         uniforms.pos.value.y = Globals.camera.position.y*common
+        uniforms.far.value.x = this.width * this.alpha
+        uniforms.far.value.y = this.height * this.alpha
     }
     constructor () {
         let bg_list = [
@@ -63,7 +65,7 @@ class Background {
             let geometry = new THREE.PlaneGeometry(Globals.width, Globals.height, 1, 1);
             let uniforms = {
                 texture: { value: tex },
-                far: { value: new THREE.Vector2(this.width * alpha, this.height * alpha) },
+                far: { value: new THREE.Vector2() },
                 dotvec: { value: new THREE.Vector2(beta_1*coeff, beta_2*coeff) },
                 scale: {value: new THREE.Vector2()},
                 pos: {value: new THREE.Vector2()}
@@ -83,7 +85,7 @@ class Background {
     varying vec2 vUv;
     void main() {
     vec2 vUvS = vUv*scale + (-scale + 1.0)/2.0 + pos;
-    float r = sin(dot(vUvS.xy, dotvec));
+    float r = sin(dot(vUv.xy, dotvec));
     vec2 v = fract(vec2(vUvS.x + r/far.x, vUvS.y + r/far.y));
     vec3 color = texture2D(texture, v).rgb*0.7 + 0.15;
     gl_FragColor = vec4(color, 1);
