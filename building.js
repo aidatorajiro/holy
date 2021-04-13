@@ -221,13 +221,13 @@ class Building {
         return [xc, yc];
     }
 
-    async drawPoint (r, asset, x, y, base_scale = 1, base_offset_x = 0, base_offset_y = 0) {
+    async drawPoint (r, asset, x, y, base_scale = 1, base_offset_x = 0, base_offset_y = 0, min_alpha = 0.2) {
         let texture = await Globals.texture.get(asset);
         let geometry = new THREE.PlaneGeometry(texture.image.width, texture.image.height, 1, 1);
         let material = new THREE.RawShaderMaterial({
             uniforms: {
                 texture: { value: texture },
-                color: { value: new THREE.Vector4(r(), r(), r(), r()) }
+                color: { value: new THREE.Vector4(r(), r(), r(), Math.min(1.0, r() + min_alpha)) }
             },
             vertexShader: Shaders.defaultVertexShader,
             fragmentShader: `
