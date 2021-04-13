@@ -4,18 +4,21 @@ class Character {
         Globals.event.addListener("animate", () => (this.animate.call(this)))
         let rnd = Utils.rnd("character.js precious seed " + Math.random())
         this.rnd = rnd;
-        this.num_images = 18;
         this.texture = [];
         this.data = [];
+        this.urls = [];
+        for (let i = 0; i < 18; i++) {
+            this.urls.push("assets/emoji/image-" + i + ".png");
+        }
         (async () => {
-            for (let i = 0; i < this.num_images; i++) {
-                this.texture.push(await Globals.texture.get("assets/emoji/image-" + i + ".png"));
+            for (let l of this.urls) {
+                this.texture.push(await Globals.texture.get(l));
             }
         })();
     }
     animate () {
         const r = this.rnd
-        if (this.texture.length === this.num_images) {
+        if (this.texture.length === this.urls.length) {
             if (r() < 0.01) {
                 let speed_x = r() - 0.5;
                 let speed_y = r() - 0.5;
@@ -23,7 +26,7 @@ class Character {
                 let speed_rot_y = (r() - 0.5)*0.01;
                 let speed_rot_z = (r() - 0.5)*0.01;
                 let spawn_side = Math.floor(r() * 2);
-                let tex = this.texture[Math.floor(r() * this.num_images)]
+                let tex = this.texture[Math.floor(r() * this.texture.length)]
                 let geometry = new THREE.PlaneGeometry(tex.image.width, tex.image.height, 1, 1);
                 let material = new THREE.RawShaderMaterial({
                     uniforms: {
