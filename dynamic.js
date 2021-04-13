@@ -54,6 +54,8 @@ class DynamicCache {
                 dyn.lastCreateTime = Globals.time
                 console.log("dynamic created at " + dyn.box.min.x + ", " + dyn.box.min.y + ", " + dyn.box.max.x + ", " + dyn.box.max.y)
                 dyn.event.runEvent("create", dyn)
+            } else if (Globals.time - dyn.lastCreateTime > dyn.lifetime) {
+                dyn.remove()
             }
         }
     }
