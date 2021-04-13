@@ -496,7 +496,7 @@ gl_FragColor *= color;
 
                 let dist = Math.sqrt((sx - ex)*(sx - ex) + (sy - ey)*(sy - ey));
 
-                let distlim = Infinity
+                let distlim = 1000
 
                 if (dist <= distlim) {
                     this.drawPoint(Utils.rnd(String(j)+type+name), "assets/point.png", csx, csy)
