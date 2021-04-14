@@ -22,8 +22,6 @@ class Character {
             if (r() < 0.01) {
                 let speed_x = r() - 0.5;
                 let speed_y = r() - 0.5;
-                let speed_rot_x = (r() - 0.5)*0.01;
-                let speed_rot_y = (r() - 0.5)*0.01;
                 let speed_rot_z = (r() - 0.5)*0.01;
                 let spawn_side = Math.floor(r() * 2);
                 let tex = this.texture[Math.floor(r() * this.texture.length)]
@@ -71,15 +69,22 @@ gl_FragColor *= color;
 
                 console.log("character added")
 
-                this.data.push([speed_x, speed_y, speed_rot_x, speed_rot_y, speed_rot_z, mesh])
+                this.data.push([speed_x, speed_y, speed_rot_z, mesh])
             }
-            for (let [speed_x, speed_y, speed_rot_x, speed_rot_y, speed_rot_z, mesh] of this.data) {
+            let new_data = []
+            for (let i = 0; i < this.data.length; i++) {
+                let d = this.data[i];
+                let [speed_x, speed_y, speed_rot_z, mesh] = d;
                 mesh.position.x += speed_x
                 mesh.position.y += speed_y
-                //mesh.rotation.x += speed_rot_x
-                //mesh.rotation.y += speed_rot_y
                 mesh.rotation.z += speed_rot_z
+                if (mesh.position.distanceTo(Globals.camera.position) < 150000) {
+                    new_data.push(d)
+                } else {
+                    Globals.scene.remove(mesh)
+                }
             }
+            this.data = new_data
         }
     }
 }
