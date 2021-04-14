@@ -27,6 +27,8 @@ for (i, n) in enumerate(names):
 
 import random
 
+random.seed(97496192)
+
 lis = list(num_map.items())
 
 random.shuffle(lis)
