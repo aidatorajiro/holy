@@ -6,8 +6,9 @@ xmls = glob.glob('./all_xml/*/*.xml')
 
 xmls = list(reversed(sorted(xmls)))
 jsonobj = []
-output_txt = False
+output_txt = True
 get_nonempty_set = False
+modulo = 50
 nonempty_set = set()
 nonempty_set_child = set()
 
@@ -27,6 +28,8 @@ def innerXML(tag):
     return (tag.text or '') + ''.join(tst(e) for e in tag)
 
 for i, fn in enumerate(xmls):
+    if modulo and i % modulo != 0:
+        continue
     print("%s / %s" % (i + 1, len(xmls)))
     with open(fn) as f:
         data = f.read()
@@ -39,6 +42,7 @@ for i, fn in enumerate(xmls):
 
         if elem.tag == "Ruby":
             append = remove_last_spaces(tst(elem)).replace("\n", "").replace("<Ruby>", "$").replace("</Ruby>", "$").replace("<Rt>", "%").replace("</Rt>", "%").replace("<Rt/>", "%%")
+            result = remove_last_spaces(result)
         elif elem.tag == "Rt":
             append = ''
         else:
