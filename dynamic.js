@@ -3,6 +3,9 @@ class DynamicCache {
         this.entries = []
         this.cache = {}
         this.latticeSize = 500
+        this.lifetime = 100000
+        this.lastTimeframeUpdate = undefined
+        this.timeframe = [[], []]
     }
     getCoverBox(box) {
         let x1 = Math.floor(box.min.x / this.latticeSize)
@@ -51,26 +54,31 @@ class DynamicCache {
         for (let dyn of intersects) {
             if (dyn.created === false) {
                 dyn.created = true
-                dyn.lastCreateTime = Globals.time
                 console.log("dynamic created at " + dyn.box.min.x + ", " + dyn.box.min.y + ", " + dyn.box.max.x + ", " + dyn.box.max.y)
                 dyn.event.runEvent("create", dyn)
-            } else if (Globals.time - dyn.lastCreateTime > dyn.lifetime) {
+                this.timeframe[1].push(dyn)
+            }
+        }
+        if (this.lastTimeframeUpdate === undefined) {
+            this.lastTimeframeUpdate = Globals.time
+        } else if (Globals.time - this.lastTimeframeUpdate > this.lifetime) {
+            for (let dyn of this.timeframe[0]) {
                 dyn.remove()
             }
+            this.timeframe = [this.timeframe[1], []]
+            this.lastTimeframeUpdate = Globals.time
         }
     }
 }
 
 class Dynamic {
-    constructor (x, y, w, h, lifetime = 100000) {
+    constructor (x, y, w, h) {
         this.box = new THREE.Box2(
             new THREE.Vector2(x - w/2, y - h/2),
             new THREE.Vector2(x + w/2, y + h/2)
         )
         this.event = new EventManagement()
-        this.lastCreateTime = undefined
         this.created = false
-        this.lifetime = lifetime
     }
     /*update () {
         let camera_box = Globals.cameraBox;
