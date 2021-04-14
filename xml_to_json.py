@@ -6,9 +6,9 @@ xmls = glob.glob('./all_xml/*/*.xml')
 
 xmls = list(reversed(sorted(xmls)))
 jsonobj = []
-output_txt = True
+output_txt = False
 get_nonempty_set = False
-modulo = 50
+modulo = None
 nonempty_set = set()
 nonempty_set_child = set()
 
