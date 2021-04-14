@@ -1,6 +1,7 @@
 class Coordinator {
     constructor () {
         this.current_batch = undefined
+        this.decorations = []
         this.buildings = []
         this.buildings_boxes = []
         this.buildings_flag = false
