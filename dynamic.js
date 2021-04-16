@@ -54,7 +54,7 @@ class DynamicCache {
         for (let dyn of intersects) {
             if (dyn.created === false) {
                 dyn.created = true
-                console.log("dynamic created at " + dyn.box.min.x + ", " + dyn.box.min.y + ", " + dyn.box.max.x + ", " + dyn.box.max.y)
+                // console.log("dynamic created at " + dyn.box.min.x + ", " + dyn.box.min.y + ", " + dyn.box.max.x + ", " + dyn.box.max.y)
                 dyn.event.runEvent("create", dyn)
                 this.timeframe[1].push(dyn)
             }
@@ -94,7 +94,7 @@ class Dynamic {
         }
     }*/
     remove () {
-        console.log("dynamic removed at " + this.box.min.x + ", " + this.box.min.y + ", " + this.box.max.x + ", " + this.box.max.y)
+        // console.log("dynamic removed at " + this.box.min.x + ", " + this.box.min.y + ", " + this.box.max.x + ", " + this.box.max.y)
         this.event.runEvent("remove", this)
         this.created = false
     }

@@ -6,12 +6,15 @@ class Coordinator {
         this.buildings_boxes = []
         this.buildings_flag = false
         this.rnd = Utils.rnd("coordinator.js precious seed " + Math.random())
-        Globals.camera.position.x = 10000000*this.rnd()
-        Globals.camera.position.y = 10000000*this.rnd()
+        this.randomCameraPos()
         Globals.event.addListener("animate", () => (this.animate.call(this)))
         Globals.raw.event.addListener("fetch_len", async (len) => {
             this.num_batches = len
         });
+    }
+    randomCameraPos () {
+        Globals.camera.position.x = 10000000*this.rnd()
+        Globals.camera.position.y = 10000000*this.rnd()
     }
     animate () {
         const r = this.rnd
@@ -43,6 +46,7 @@ class Coordinator {
         }
         if (!intersect && this.buildings.length !== 0 && r() < 0.001) {
             this.buildings_flag = false
+            this.randomCameraPos()
         }
     }
     async makeBuildings (seed, fs, base_len, offset, canvas_lines, center_x, center_y) {
