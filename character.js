@@ -1,6 +1,5 @@
 class Character {
     constructor () {
-        this.special_emojis = []
         Globals.event.addListener("animate", () => (this.animate.call(this)))
         let rnd = Utils.rnd("character.js precious seed " + Math.random())
         this.rnd = rnd;
@@ -18,7 +17,7 @@ class Character {
     }
     animate () {
         const r = this.rnd
-        if (this.texture.length === this.urls.length) {
+        if (this.texture.length === this.urls.length) { // if all textures loaded
             if (r() < 0.01) {
                 let speed_x = r() - 0.5;
                 let speed_y = r() - 0.5;

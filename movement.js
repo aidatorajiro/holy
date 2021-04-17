@@ -1,17 +1,49 @@
 class Movement {
     constructor () {
-        this.pressingkeys = new Set()
+        this.keyboardPressing = new Set()
         Globals.event.addListener("keydown", (ev) => {
-            this.pressingkeys.add(ev.key)
+            if (ev.key === 'w' || ev.key === 'a' || ev.key === 's' || ev.key === 'd') {
+                this.keyboardPressing.add(ev.key)
+            }
         });
         Globals.event.addListener("keyup", (ev) => {
-            this.pressingkeys.delete(ev.key)
+            this.keyboardPressing.delete(ev.key)
         });
+        this.gamepadPressing = new Set()
+        this.pressing = new Set()
         let a = 40
         let f = (x) => (Math.atan( ( 1 / ( a * 2 / Math.PI ) ) * x ) * a * 2 / Math.PI)
         let rnd = Utils.rnd("movement.js precious seed " + Math.random())
+        this.lastChecked = undefined;
         Globals.event.addListener("animate", (ev) => {
-            for (let k of this.pressingkeys) {
+            if (this.lastChecked === undefined) {
+                this.lastChecked = Globals.time
+            }
+            if (Globals.time - this.lastChecked > 100) {
+                this.lastChecked = Globals.time
+                let gp = navigator.getGamepads()[0];
+                this.gamepadPressing.clear()
+                this.pressing.clear()
+                if (gp !== null) {
+                    if (gp.axes[0] < -0.5) {
+                        this.gamepadPressing.add("a")
+                    } else if (gp.axes[0] > 0.5) {
+                        this.gamepadPressing.add("d")
+                    }
+                    if (gp.axes[1] < -0.5) {
+                        this.gamepadPressing.add("w")
+                    } else if (gp.axes[1] > 0.5) {
+                        this.gamepadPressing.add("s")
+                    }
+                }
+                for (let x of this.keyboardPressing) {
+                    this.pressing.add(x)
+                }
+                for (let x of this.gamepadPressing) {
+                    this.pressing.add(x)
+                }
+            }
+            for (let k of this.pressing) {
                 let d = f(ev.delta)
                 let r = rnd()
                 let c = 0.5 + (r - 0.5)*0.4
