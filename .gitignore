@@ -2,7 +2,12 @@ all_xml
 all_xml.zip
 out.json
 sample/
-.DS_Store### https://raw.github.com/github/gitignore/db0ef78b5ad1d3caf4cab3240467562360885613/Node.gitignore
+.DS_Store
+
+three.min.js
+
+
+### https://raw.github.com/github/gitignore/db0ef78b5ad1d3caf4cab3240467562360885613/Node.gitignore
 
 # Logs
 logs
@@ -394,6 +399,3 @@ TSWLatexianTemp*
 
 # Makeindex log files
 *.lpz
-
-
-three.min.js
