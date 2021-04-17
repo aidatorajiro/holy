@@ -6,6 +6,13 @@ sample/
 
 three.min.js
 
+.DS_Store
+assetmake
+
+batches
+
+assets/orig
+
 
 ### https://raw.github.com/github/gitignore/db0ef78b5ad1d3caf4cab3240467562360885613/Node.gitignore
 
@@ -113,13 +120,6 @@ dist
 
 # TernJS port file
 .tern-port
-
-.DS_Store
-assetmake
-
-batches
-
-assets/orig
 
 ### https://raw.github.com/github/gitignore/db0ef78b5ad1d3caf4cab3240467562360885613/TeX.gitignore
 
