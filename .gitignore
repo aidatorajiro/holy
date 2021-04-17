@@ -2,7 +2,6 @@ all_xml
 all_xml.zip
 out.json
 sample/
-.DS_Store
 
 three.min.js
 
