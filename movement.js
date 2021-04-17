@@ -15,6 +15,7 @@ class Movement {
         let f = (x) => (Math.atan( ( 1 / ( a * 2 / Math.PI ) ) * x ) * a * 2 / Math.PI)
         let rnd = Utils.rnd("movement.js precious seed " + Math.random())
         this.lastChecked = undefined;
+        this.traces = [];
         Globals.event.addListener("animate", (ev) => {
             if (this.lastChecked === undefined) {
                 this.lastChecked = Globals.time
@@ -22,8 +23,9 @@ class Movement {
             if (Globals.time - this.lastChecked > 100) {
                 this.lastChecked = Globals.time
                 let gp = navigator.getGamepads()[0];
-                this.gamepadPressing.clear()
-                this.pressing.clear()
+
+                // construct gamepadPressing
+                this.gamepadPressing.clear();
                 if (gp !== null) {
                     if (gp.id === "USB Gamepad  (Vendor: 0079 Product: 0011)") {
                         if (gp.buttons[0].pressed) {
@@ -51,13 +53,17 @@ class Movement {
                         }
                     }
                 }
-                for (let x of this.keyboardPressing) {
-                    this.pressing.add(x)
-                }
-                for (let x of this.gamepadPressing) {
-                    this.pressing.add(x)
-                }
             }
+
+            // merge two sets
+            this.pressing.clear()
+            for (let x of this.keyboardPressing) {
+                this.pressing.add(x)
+            }
+            for (let x of this.gamepadPressing) {
+                this.pressing.add(x)
+            }
+
             for (let k of this.pressing) {
                 let d = f(ev.delta)
                 let r = rnd()
