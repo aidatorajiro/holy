@@ -25,15 +25,30 @@ class Movement {
                 this.gamepadPressing.clear()
                 this.pressing.clear()
                 if (gp !== null) {
-                    if (gp.axes[0] < -0.5) {
-                        this.gamepadPressing.add("a")
-                    } else if (gp.axes[0] > 0.5) {
-                        this.gamepadPressing.add("d")
-                    }
-                    if (gp.axes[1] < -0.5) {
-                        this.gamepadPressing.add("w")
-                    } else if (gp.axes[1] > 0.5) {
-                        this.gamepadPressing.add("s")
+                    if (gp.id === "USB Gamepad  (Vendor: 0079 Product: 0011)") {
+                        if (gp.buttons[0].pressed) {
+                            this.gamepadPressing.add("a")
+                        }
+                        if (gp.buttons[3].pressed) {
+                            this.gamepadPressing.add("d")
+                        }
+                        if (gp.buttons[2].pressed) {
+                            this.gamepadPressing.add("w")
+                        }
+                        if (gp.buttons[1].pressed) {
+                            this.gamepadPressing.add("s")
+                        }
+                    } else {
+                        if (gp.axes[0] < -0.5) {
+                            this.gamepadPressing.add("a")
+                        } else if (gp.axes[0] > 0.5) {
+                            this.gamepadPressing.add("d")
+                        }
+                        if (gp.axes[1] < -0.5) {
+                            this.gamepadPressing.add("w")
+                        } else if (gp.axes[1] > 0.5) {
+                            this.gamepadPressing.add("s")
+                        }
                     }
                 }
                 for (let x of this.keyboardPressing) {
