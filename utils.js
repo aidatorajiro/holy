@@ -1,4 +1,12 @@
 let Utils = {
+    mergeSets: function (target, sets) {
+        target.clear()
+        for (let s of sets) {
+            for (let x of s) {
+                target.add(x)
+            }
+        }
+    },
     makeBox: function (x, y, w, h) {
         return new THREE.Box2(
             new THREE.Vector2(x - w / 2, y - h / 2),
