@@ -12,10 +12,78 @@
         body {
             margin: 0;
         }
+        .title {
+            font-family: NotoSans;
+            color: #FFFFFF;
+            position: absolute;
+            text-align: center;
+        }
+        .title > span, .title > h1 {
+            font-size: 26px;
+            display: inline;
+            background: #000000;
+        }
+        .title > h1 {
+            font-size: 70px;
+        }
+        .title > p {
+            margin: 18px;
+        }
+        .kesu {
+            animation: kesuanime 30s linear;
+            animation-iteration-count: 1;
+            opacity: 0;
+        }
+        @keyframes kesuanime {
+            0% { opacity: 1; }
+            50% { opacity: 1; }
+            60% { opacity: 0.9; }
+            70% { opacity: 0.8; }
+            80% { opacity: 0.7; }
+            90% { opacity: 0.6; }
+            100% { opacity: 0; } 
+        }
     </style>
 </head>
 <body>
-    <div style="font-family: NotoSans; color: #00000001; position: absolute;">《ここに何か面白い文章を書く》</div>
+    <div class="title kesu">
+
+<h1>Ero法令検索</h1>
+
+<p></p>
+
+<span>日本の法律は「天皇」の名の下に公布されます。「天」について、道教の経典『道徳経』はどのように言っているのでしょうか...</span>
+
+<p></p>
+
+<span>Japanese Laws are promulgated under the name of Tenno (天皇).</span>
+
+<p></p>
+
+<span>In some ancient Chinese philosophical texts, 天 is a concept similar to God. Let's read a part of Dao De Jing, a Daoism scripture.</span>
+
+<p></p>
+
+<span>道德經 73</span>
+
+<p></p>
+
+<span>勇於敢則殺勇於不敢則活此兩者或利或害天之所惡孰知其故是以聖人猶難之天之道不爭而善勝不言而善應不召而自來繟然而善謀天網恢恢踈而不失</span>
+
+<p></p>
+
+<span>過激派は殺そうとし、穏健派は生かそうとする。この二者は利や害という理由で善悪を判断する。しかし、天にとっての悪、本当の悪は、誰もそれが悪である理由を知らない。聖人でも知ることは難しい。それでも天の道では、争いがなくとも善が勝ち、言わなくとも善に従い、呼ばなくても自然にやって来る。それはまったりと善へと向かう計画なのだ。天の網は広く大きく、すきまがあるが、間違うことがない。</span>
+
+<p></p>
+
+<span>The extremists want to kill and the moderates want to keep them alive. These two parties judge good or evil by the measure of utility or interest. But evil for Heaven, the true evil, no one knows why it is evil. Even the saints find it difficult to know. Still, in the Dao of Heaven, goodness wins without conflict, goodness follows without saying, and goodness comes naturally without calling. It is a gradual plan to move toward goodness. The net of Heaven is wide and loose, but there is no mistake.</span>
+
+<p></p>
+
+<span>（武内義雄『老子の研究 下』(改造社, 昭和15, p188)、楠山春樹『老子入門』(講談社, 2002, p230)を参考に独自訳）</span>
+
+<p></p>
+    </div>
     <script>
         if (window.require !== undefined) {
             window.THREE = require('three')

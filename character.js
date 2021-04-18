@@ -24,7 +24,7 @@ class Character {
                 let speed_rot_z = (r() - 0.5)*0.01;
                 let spawn_side = Math.floor(r() * 2);
                 let tex = this.texture[Math.floor(r() * this.texture.length)]
-                let scale = r()
+                let scale = r()*2
                 let geometry = new THREE.PlaneGeometry(tex.image.width * scale, tex.image.height * scale, 1, 1);
                 let material = new THREE.RawShaderMaterial({
                     uniforms: {
