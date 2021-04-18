@@ -4,6 +4,8 @@ let child_process = require('child_process')
 
 let processes = {}
 
+let fs = require("fs")
+
 contextBridge.exposeInMainWorld('Preload', {
   spawnMecab: () => {
     let child = child_process.spawn("mecab")
@@ -26,4 +28,10 @@ contextBridge.exposeInMainWorld('Preload', {
   onExit: (rand, callback) => {
     processes[rand].on("exit", code => callback(code));
   },
+  saveTrace: (data) => {
+    fs.writeFileSync("trace.json", data)
+  },
+  loadTrace: () => {
+    return String(fs.readFileSync("trace.json"))
+  }
 })

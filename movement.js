@@ -10,10 +10,19 @@ class Movement {
         let a = 40
         let f = (x) => (Math.atan( ( 1 / ( a * 2 / Math.PI ) ) * x ) * a * 2 / Math.PI)
 
-        let rnd = Utils.rnd("movement.js precious seed " + Math.random())
+        let rnd = Utils.rnd("movement.js precious seed " + Math.random());
         this.lastGamepadChecked = undefined;
-        this.trace = [];
+        try {
+            this.trace = JSON.parse(Preload.loadTrace());
+        } catch (e) {
+            console.error(e)
+            this.trace = []
+        }
+        if (!Array.isArray(this.trace)) {
+            this.trace = []
+        }
         this.lastPressingTime = undefined;
+        this.lastTraceSaved = undefined;
 
         Globals.event.addListener("keydown", (ev) => {
             let flag = flags[ev.key]
@@ -35,6 +44,9 @@ class Movement {
             }
             if (this.lastGamepadChecked === undefined) {
                 this.lastGamepadChecked = Globals.time
+            }
+            if (this.lastTraceSaved === undefined) {
+                this.lastTraceSaved = Globals.time
             }
             if (Globals.time - this.lastGamepadChecked > 100) {
                 this.lastGamepadChecked = Globals.time
@@ -78,6 +90,10 @@ class Movement {
                 }
             }
 
+            if (Globals.time - this.lastTraceSaved > 10000) {
+                this.saveTrace()
+            }
+
             let d = f(ev.delta)
             let r = rnd()
             let c = 0.5 + (r - 0.5)*0.4
@@ -94,5 +110,12 @@ class Movement {
                 Globals.camera.position.y -= d*c
             }
         });
+    }
+    saveTrace () {
+        let max_entries = 10000
+        this.lastTraceSaved = Globals.time
+        this.trace = this.trace.slice(-max_entries)
+        Preload.saveTrace(JSON.stringify(this.trace))
+        console.log("trace saved")
     }
 }
