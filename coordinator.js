@@ -94,12 +94,12 @@ class Coordinator {
             } else {
                 let r = rnd()
                 if (r < 0.5) {
-                    this.drawDecoration(center_x + x_l + offset/2, center_y)
+                    this.drawDecoration("assets/conv/god.png", center_x + x_l + offset/2, center_y)
                     distance = x_l - w/2;
                     draw();
                     x_l -= w + offset
                 } else {
-                    this.drawDecoration(center_x + x_r - offset/2, center_y)
+                    this.drawDecoration("assets/conv/god.png", center_x + x_r - offset/2, center_y)
                     distance = x_r + w/2;
                     draw();
                     x_r += w + offset
@@ -107,9 +107,8 @@ class Coordinator {
             }
         }
     }
-    async drawDecoration (x, y) {
-        let r = this.rnd
-        let tex = await Globals.texture.get("assets/conv/god.png");
+    async drawDecoration (src, x, y) {
+        let tex = await Globals.texture.get(src);
         let geometry = new THREE.PlaneGeometry(tex.image.width, tex.image.height, 1, 1);
         let material = new THREE.RawShaderMaterial({
             uniforms: {
