@@ -160,6 +160,8 @@ from and not be held liable to the user for any such damages as noted
 above as far as the program is concerned.
 
 
+## LuaLaTeX
+
 # Fonts licenses
 
 The following fonts are used in the application.
