@@ -27,9 +27,13 @@ class Coordinator {
         const yd = Math.floor(Globals.camera.position.y / gridsize)
         if (this.buildings_flag === false && this.num_batches !== undefined) {
             this.buildings_flag = true
+            for (let d of this.decorations) {
+                Globals.scene.remove(d)
+            }
             for (let b of this.buildings) {
                 b.clear()
             }
+            this.decorations = []
             this.buildings = []
             this.buildings_boxes = []
             this.makeBuildings(Globals.background.bg_params[0] + xd + "," + yd, fs, base_len, offset, canvas_lines, xd * gridsize, yd * gridsize)
@@ -90,15 +94,46 @@ class Coordinator {
             } else {
                 let r = rnd()
                 if (r < 0.5) {
+                    this.drawDecoration(center_x + x_l + offset/2, center_y)
                     distance = x_l - w/2;
                     draw();
                     x_l -= w + offset
                 } else {
+                    this.drawDecoration(center_x + x_r - offset/2, center_y)
                     distance = x_r + w/2;
                     draw();
                     x_r += w + offset
                 }
             }
         }
+    }
+    async drawDecoration (x, y) {
+        let r = this.rnd
+        let tex = await Globals.texture.get("assets/conv/god.png");
+        let geometry = new THREE.PlaneGeometry(tex.image.width, tex.image.height, 1, 1);
+        let material = new THREE.RawShaderMaterial({
+            uniforms: {
+              texture: { value: tex },
+              color: { value: new THREE.Vector4(1, 1, 1, 1) }
+            },
+            vertexShader: Shaders.defaultVertexShader,
+            fragmentShader: `
+precision mediump float;
+uniform sampler2D texture;
+uniform vec4 color;
+varying vec2 vUv;
+void main() {
+    gl_FragColor = texture2D(texture, vUv);
+    gl_FragColor *= color;
+}
+`,
+            transparent: true,
+        });
+        let mesh = new THREE.Mesh(geometry, material);
+        mesh.position.x = x
+        mesh.position.y = y
+        mesh.position.z = 5
+        Globals.scene.add(mesh);
+        this.decorations.push(mesh);
     }
 }

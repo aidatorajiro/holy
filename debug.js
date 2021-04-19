@@ -7,6 +7,11 @@ let Debug = {
         let n = this.get_assets(asset)[0];
         Globals.camera.position.x = n.position.x
         Globals.camera.position.y = n.position.y
+    },
+    jump_to_dec: function(k) {
+        let d = Globals.coordinator.decorations[k]
+        Globals.camera.position.x = d.position.x
+        Globals.camera.position.y = d.position.y
     }
 }
 

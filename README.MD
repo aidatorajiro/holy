@@ -160,7 +160,9 @@ from and not be held liable to the user for any such damages as noted
 above as far as the program is concerned.
 
 
-## LuaLaTeX
+## Softwares Used to Make Assets (pictures, sounds, etc)
+
+GIMP, LuaLaTeX, Paintbrush
 
 # Fonts licenses
 
