@@ -9,17 +9,17 @@ class Movement {
 
         this.rnd = Utils.rnd("movement.js precious seed " + Math.random());
         this.lastGamepadChecked = undefined;
-        try {
-            this.trace = JSON.parse(Preload.loadTrace());
-        } catch (e) {
-            console.error(e)
-            this.trace = []
-        }
-        if (!Array.isArray(this.trace)) {
-            this.trace = []
-        }
+        //try {
+        //    this.trace = JSON.parse(Preload.loadTrace());
+        //} catch (e) {
+        //    console.error(e)
+        //    this.trace = []
+        //}
+        //if (!Array.isArray(this.trace)) {
+        //    this.trace = []
+        //}
         this.lastPressingTime = undefined;
-        this.lastTraceSaved = undefined;
+        //this.lastTraceSaved = undefined;
 
         Globals.event.addListener("keydown", (ev) => {
             let flag = this.flags[ev.key]
@@ -48,9 +48,9 @@ class Movement {
         if (this.lastGamepadChecked === undefined) {
             this.lastGamepadChecked = Globals.time
         }
-        if (this.lastTraceSaved === undefined) {
-            this.lastTraceSaved = Globals.time
-        }
+        //if (this.lastTraceSaved === undefined) {
+        //    this.lastTraceSaved = Globals.time
+        //}
         if (Globals.time - this.lastGamepadChecked > 100) {
             this.lastGamepadChecked = Globals.time
             let gp = navigator.getGamepads()[0];
@@ -87,7 +87,7 @@ class Movement {
             // merge two sets
             let pr = this.keyboardPressing | this.gamepadPressing
             if (this.pressing !== pr) {
-                this.trace.push([this.pressing, Globals.time - this.lastPressingTime])
+                //this.trace.push([this.pressing, Globals.time - this.lastPressingTime])
                 this.lastPressingTime = Globals.time
                 this.pressing = pr
             }
@@ -96,9 +96,9 @@ class Movement {
             }
         }
 
-        if (Globals.time - this.lastTraceSaved > 10000) {
-            this.saveTrace()
-        }
+        //if (Globals.time - this.lastTraceSaved > 10000) {
+        //    this.saveTrace()
+        //}
 
         let d = f(Globals.delta)
         let r = this.rnd()
@@ -117,11 +117,11 @@ class Movement {
             Globals.camera.position.y -= d*c
         }
     }
-    saveTrace () {
-        let max_entries = 10000
-        this.lastTraceSaved = Globals.time
-        this.trace = this.trace.slice(-max_entries)
-        Preload.saveTrace(JSON.stringify(this.trace))
-        console.log("trace saved")
-    }
+    //saveTrace () {
+    //    let max_entries = 10000
+    //    this.lastTraceSaved = Globals.time
+    //    this.trace = this.trace.slice(-max_entries)
+    //    Preload.saveTrace(JSON.stringify(this.trace))
+    //    console.log("trace saved")
+    //}
 }
