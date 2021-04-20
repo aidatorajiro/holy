@@ -17,6 +17,12 @@ class Coordinator {
         Globals.camera.position.y = 10000000*this.rnd()
     }
     animate () {
+        if (Globals.movement.inputStarted === true) {
+            document.getElementsByClassName("title")[0].className = "title kesu"
+        }
+        if (Globals.movement.inputStarted === true && Globals.time - Globals.movement.lastPressingTime > 1000 * 60) {
+            Preload.quit()
+        }
         const r = this.rnd
         const fs = 32
         const base_len = 44

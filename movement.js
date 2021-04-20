@@ -3,6 +3,7 @@ class Movement {
         this.keyboardPressing = 0
         this.gamepadPressing = 0
         this.pressing = 0
+        this.inputStarted = false
 
         this.flags = {'d': 1, 'a': 2, 'w': 4, 's': 8}
 
@@ -85,10 +86,13 @@ class Movement {
 
             // merge two sets
             let pr = this.keyboardPressing | this.gamepadPressing
-            if (this.pressing != pr) {
+            if (this.pressing !== pr) {
                 this.trace.push([this.pressing, Globals.time - this.lastPressingTime])
                 this.lastPressingTime = Globals.time
                 this.pressing = pr
+            }
+            if (this.pressing !== 0) {
+                this.inputStarted = true
             }
         }
 
@@ -99,16 +103,17 @@ class Movement {
         let d = f(Globals.delta)
         let r = this.rnd()
         let c = 0.5 + (r - 0.5)*0.4
-        if (this.pressing & flags["d"]) {
+        let pp = this.pressing
+        if (pp & flags["d"]) {
             Globals.camera.position.x += d*c
         }
-        if (this.pressing & flags["a"]) {
+        if (pp & flags["a"]) {
             Globals.camera.position.x -= d*c
         }
-        if (this.pressing & flags["w"]) {
+        if (pp & flags["w"]) {
             Globals.camera.position.y += d*c
         }
-        if (this.pressing & flags["s"]) {
+        if (pp & flags["s"]) {
             Globals.camera.position.y -= d*c
         }
     }

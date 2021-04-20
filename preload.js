@@ -1,4 +1,5 @@
-const { contextBridge } = require('electron')
+const electron = require('electron')
+const contextBridge = electron.contextBridge
 const crypto = require("crypto");
 let child_process = require('child_process')
 
@@ -33,5 +34,8 @@ contextBridge.exposeInMainWorld('Preload', {
   },
   loadTrace: () => {
     return String(fs.readFileSync("trace.json"))
+  },
+  quit: () => {
+    window.close()
   }
 })
