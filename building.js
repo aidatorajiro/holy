@@ -178,7 +178,15 @@ class Building {
                       texture: { value: texture }
                     },
                     vertexShader: Shaders.defaultVertexShader,
-                    fragmentShader: Shaders.defaultFragmentShader,
+                    fragmentShader: `
+precision mediump float;
+uniform sampler2D texture;
+varying vec2 vUv;
+void main() {
+    gl_FragColor = texture2D(texture, vUv);
+    gl_FragColor.a *= 0.4;
+}
+`,
                     transparent: true,
                 });
                 let mesh = new THREE.Mesh(geometry, material);

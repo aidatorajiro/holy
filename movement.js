@@ -55,6 +55,8 @@ class Movement {
             this.lastGamepadChecked = Globals.time
             let gp = navigator.getGamepads()[0];
 
+            this.gamepadPressing = 0;
+
             // construct gamepadPressing
             if (gp !== null) {
                 if (gp.id === "USB Gamepad  (Vendor: 0079 Product: 0011)") {

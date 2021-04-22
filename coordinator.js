@@ -29,7 +29,7 @@ class Coordinator {
             Preload.quit()
         }
         const r = this.rnd
-        const fs = 32
+        const fs = 64
         const base_len = 44
         const offset = 10 * fs;
         const canvas_lines = 100;
