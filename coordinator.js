@@ -59,7 +59,7 @@ class Coordinator {
                 intersect = true
             }
         }
-        if (!intersect && this.buildings.length !== 0 && r() < 0.001) {
+        if (!intersect && this.buildings.length !== 0 && r() < 0.01) {
             this.buildings_flag = false
             this.randomCameraPos()
         }
