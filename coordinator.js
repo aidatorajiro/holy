@@ -1,5 +1,6 @@
 class Coordinator {
     constructor () {
+        this.inputChecked = false
         this.current_batch = undefined
         this.decorations = []
         this.buildings = []
@@ -17,7 +18,11 @@ class Coordinator {
         Globals.camera.position.y = 10000000*this.rnd()
     }
     animate () {
-        if (Globals.movement.inputStarted === true) {
+        if (Globals.movement.inputStarted === true && this.inputChecked === false) {
+            this.inputChecked = true
+            var audio = new Audio('KIMIGAYO.ogg');
+            audio.loop = true;
+            audio.play();
             document.getElementsByClassName("title")[0].className = "title kesu"
         }
         if (Globals.movement.inputStarted === true && Globals.time - Globals.movement.lastPressingTime > 1000 * 60) {

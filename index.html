@@ -119,15 +119,15 @@
     <script>
         if (window.require !== undefined) {
             window.THREE = require('three')
-            window.Tone = require('tone')
+            //window.Tone = require('tone')
         } else {
             let s;
             s = document.createElement("script");
             s.src = "node_modules/three/build/three.min.js"
             document.body.appendChild(s);
-            s = document.createElement("script");
-            s.src = "node_modules/tone/build/Tone.js"
-            document.body.appendChild(s);
+            //s = document.createElement("script");
+            //s.src = "node_modules/tone/build/Tone.js"
+            //document.body.appendChild(s);
         }
     </script>
     <script src="title.js"></script>

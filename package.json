@@ -21,7 +21,6 @@
   "description": "holy holy holy...",
   "dependencies": {
     "electron-nightly": "^14.0.0-nightly.20210311",
-    "three": "^0.126.1",
-    "tone": "^14.7.77"
+    "three": "^0.126.1"
   }
 }
