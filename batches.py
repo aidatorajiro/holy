@@ -1,5 +1,4 @@
 import json
-import random
 
 with open('out.json', 'r') as f:
     out_json = json.load(f)

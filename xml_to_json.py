@@ -28,7 +28,7 @@ def innerXML(tag):
     return (tag.text or '') + ''.join(tst(e) for e in tag)
 
 for i, fn in enumerate(xmls):
-    if modulo and i % modulo != 0:
+    if modulo and i % modulo[0] != modulo[1]:
         continue
     print("%s / %s" % (i + 1, len(xmls)))
     with open(fn) as f:
@@ -61,7 +61,7 @@ for i, fn in enumerate(xmls):
             if m:
                 append = ("#s%s#" % m[1]) + append
         
-        # Add "\n" for the last Ruby in the parent element
+        # Add "\n" for the last Ruby (ex. Fig element after Ruby, Ruby is the last tag in its parent)
         if last_is_Ruby_or_Rt and elem.tag != "Ruby" and elem.tag != "Rt":
             result = result + "\n"
 
@@ -80,6 +80,9 @@ for i, fn in enumerate(xmls):
                 newline = False
             else:
                 newline = True
+
+            append = re.sub(r" +", "　", append)
+            append = re.sub(r"\t", "　", append)
 
             result += append + ("\n" if newline else "")
 
