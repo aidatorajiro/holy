@@ -1,4 +1,5 @@
-while :
+while [ $? -eq 0 ]
 do
-    yarn prod
+yarn prod
 done
+echo welldone

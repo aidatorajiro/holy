@@ -19,9 +19,14 @@ function createWindow () {
     }
   })
 
-  let quitApp = function() {
+  let quitAppZero = function() {
     win.close();
     app.quit();
+  }
+
+  let quitAppOne = function() {
+    win.close();
+    app.exit(1);
   }
 
   // disable all "local" shortcuts
@@ -30,8 +35,8 @@ function createWindow () {
 
   // for development, add opt+cmt+i, cmd+r, cmd+q as "global" shortcut
   // never reload, because reloading causes serious child_process issues
-  globalShortcut.register('CmdOrCtrl+r', quitApp);
-  globalShortcut.register('CmdOrCtrl+q', quitApp);
+  globalShortcut.register('CmdOrCtrl+r', quitAppZero);
+  globalShortcut.register('CmdOrCtrl+q', quitAppOne);
 
   if (env.NODE_ENV === 'development') {
     globalShortcut.register('Alt+CmdOrCtrl+I', function () {
@@ -46,9 +51,7 @@ function createWindow () {
 app.whenReady().then(createWindow)
 
 app.on('window-all-closed', () => {
-  //if (process.platform !== 'darwin') {
-    app.quit()
-  //}
+  app.quit()
 })
 
 app.on('activate', () => {

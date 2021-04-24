@@ -9,36 +9,70 @@ class Background {
         uniforms.far.value.y = this.height * this.alpha
     }
     constructor () {
-        let bg_list = [
-            [
-                "assets/4s.png",
-                200,
-                7.5,
-                6000,
-                56700
-            ],
-            [
-                "assets/4.png",
-                200,
-                7.5,
-                6000,
-                56700
-            ],
-            [
-                "assets/3.png",
-                200,
-                7.5,
-                6000,
-                56700
-            ],
-            [
-                "assets/2.png",
-                200,
-                7.5,
-                6000,
-                56700
-            ],
-        ]
+        let bg_list;
+        if (Globals.width < Globals.height) {
+            bg_list = [
+                [
+                    "assets/4s.png",
+                    200,
+                    7.5,
+                    56700,
+                    6000
+                ],
+                [
+                    "assets/4.png",
+                    200,
+                    7.5,
+                    56700,
+                    6000
+                ],
+                [
+                    "assets/3.png",
+                    200,
+                    7.5,
+                    56700,
+                    6000
+                ],
+                [
+                    "assets/2.png",
+                    200,
+                    7.5,
+                    56700,
+                    6000
+                ],
+            ];
+        } else {
+            bg_list = [
+                [
+                    "assets/4s.png",
+                    200,
+                    7.5,
+                    6000,
+                    56700
+                ],
+                [
+                    "assets/4.png",
+                    200,
+                    7.5,
+                    6000,
+                    56700
+                ],
+                [
+                    "assets/3.png",
+                    200,
+                    7.5,
+                    6000,
+                    56700
+                ],
+                [
+                    "assets/2.png",
+                    200,
+                    7.5,
+                    6000,
+                    56700
+                ],
+            ];
+        }
 
         let rnd = Utils.rnd("background.js precious seed " + Math.random())
 
