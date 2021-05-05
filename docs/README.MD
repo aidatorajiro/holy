@@ -162,7 +162,7 @@ above as far as the program is concerned.
 
 ## Softwares Used to Make Assets (pictures, sounds, etc)
 
-GIMP, LuaLaTeX, Paintbrush
+GIMP, LuaLaTeX, Paintbrush, Garageband, and more!
 
 # Fonts licenses
 
