@@ -2,6 +2,17 @@
 
 # HOLY: Homologically Optimized Legal Yearner
 
+
+`nvm install v10.24.1`
+
+`nvm use v10.24.1`
+
+`npm install -g yarn`
+
+`yarn`
+
+`yarn run prod`
+
 # Libraries/Softwares licenses
 
 The following softwares are used in the application.
