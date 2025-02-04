@@ -57,7 +57,7 @@ for i, fn in enumerate(xmls):
             if elem.tag == "ArticleTitle":
                 append = "#a#" + append
 
-            m = re.match('Subitem(\d+)Title', elem.tag)
+            m = re.match(r'Subitem(\d+)Title', elem.tag)
             if m:
                 append = ("#s%s#" % m[1]) + append
         

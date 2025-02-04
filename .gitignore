@@ -1,6 +1,8 @@
 all_xml
 all_xml.zip
 out.json
+out.small.json
+names.json
 sample/
 
 three.min.js
