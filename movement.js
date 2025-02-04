@@ -58,7 +58,7 @@ class Movement {
             this.gamepadPressing = 0;
 
             // construct gamepadPressing
-            if (gp !== null) {
+            if (gp !== null && gp !== undefined) {
                 if (gp.id === "USB Gamepad  (Vendor: 0079 Product: 0011)") {
                     if (gp.buttons[3].pressed) {
                         this.gamepadPressing |= flags["d"]
