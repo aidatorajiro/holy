@@ -13,7 +13,7 @@ function createWindow () {
     height: 600,
     fullscreen: true,
     webPreferences: {
-      nodeIntegration: false,
+      nodeIntegration: true,
       contextIsolation: true,
       preload: path.join(app.getAppPath(), 'preload.js')
     }

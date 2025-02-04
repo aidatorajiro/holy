@@ -1,5 +1,4 @@
-const electron = require('electron')
-const contextBridge = electron.contextBridge
+const { contextBridge } = require('electron');
 const crypto = require("crypto");
 let child_process = require('child_process')
 
