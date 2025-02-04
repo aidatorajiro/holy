@@ -20,7 +20,7 @@
   "homepage": "https://github.com/aidatorajiro/holy#readme",
   "description": "holy holy holy...",
   "dependencies": {
-    "electron-nightly": "^36.0.0-nightly.20250123",
+    "electron": "^31.7.7",
     "three": "^0.173.0"
   }
 }
